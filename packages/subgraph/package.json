@@ -11,6 +11,7 @@
     "deploy": "ts-node ./src/deploy.ts",
     "deploy:v0": "yarn deploy v0 v0 all",
     "deploy:v0-analytics": "yarn deploy v0-analytics v0-analytics all",
+    "deploy:v0-liquidity": "yarn deploy v0-liquidity v0-liquidity all",
     "deploy:v1-analytics": "yarn deploy v1-analytics v1-analytics all",
     "deploy:v1-runtime": "yarn deploy v1-runtime v1-runtime all",
     "deploy:v1-liquidity": "yarn deploy v1-liquidity v1-liquidity all",

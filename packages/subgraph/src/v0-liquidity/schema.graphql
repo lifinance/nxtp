@@ -1,0 +1,33 @@
+# Router represents a router and its associated liquidity
+type Router @entity {
+  id: ID!
+  liquidity: [Liquidity!]! @derivedFrom(field: "router")
+}
+
+# Tracks the liquidity routers have stored by day
+type Liquidity @entity {
+  # unique hourly id per asset created by dividing timestamp by 86400 and concatenating assetId + router
+  id: ID!
+  # timestamp rounded down to nearest hour
+  dayStartTimestamp: BigInt!
+  # block when the day starts
+  dayStartBlock: BigInt!
+  # router with the entity
+  router: Router!
+  # assetId
+  assetId: String!
+  # supplied
+  supplied: BigInt!
+  # removed
+  removed: BigInt!
+  # volume they supported
+  volume: BigInt!
+  # amount they have at end of timestamp
+  amount: BigInt!
+  # number of transactions they prepared
+  preparedTxCount: BigInt!
+  # number of transactions they fulfilled
+  fulfilledTxCount: BigInt!
+  # number of transactions that cancelled
+  cancelTxCount: BigInt!
+}

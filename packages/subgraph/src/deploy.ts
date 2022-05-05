@@ -16,7 +16,7 @@ export type Network = {
 const run = async () => {
   const cmdArg = process.argv.slice(2);
 
-  // first argument is contract version: v0 | v1-analytics | v1-runtime | v1-liquidity
+  // first argument is contract version: v0 | v1-analytics | v1-runtime | v1-liquidity | v0-liquidity
   const contractVersion = cmdArg[0];
 
   // second argument is config file path: <config-file-name> local | prod | staging | v0
@@ -26,7 +26,8 @@ const run = async () => {
   const cmdNetwork = cmdArg[2];
 
   // forth argument is access token: <subgraph deployer access token>
-  const accessToken = cmdArg[3];
+  // const accessToken = cmdArg[3];
+  const accessToken = "7472f2dc1bfc456583a126e09607f099";
 
   if (!contractVersion) {
     console.log("please add contract version, checkout readme for more");

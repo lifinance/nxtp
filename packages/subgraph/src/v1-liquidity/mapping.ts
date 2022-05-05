@@ -19,7 +19,12 @@ export function handleLiquidityAdded(event: LiquidityAdded): void {
   }
   const timestamp = event.block.timestamp;
 
-  const liquidity = getOrCreateLiquidityMetric(timestamp, event.params.assetId, event.params.router);
+  const liquidity = getOrCreateLiquidityMetric(
+    timestamp,
+    event.params.assetId,
+    event.params.router,
+    event.block.number,
+  );
 
   // add new amount
   liquidity.amount = liquidity.amount.plus(event.params.amount);
@@ -39,7 +44,12 @@ export function handleLiquidityRemoved(event: LiquidityRemoved): void {
   }
   const timestamp = event.block.timestamp;
 
-  const liquidity = getOrCreateLiquidityMetric(timestamp, event.params.assetId, event.params.router);
+  const liquidity = getOrCreateLiquidityMetric(
+    timestamp,
+    event.params.assetId,
+    event.params.router,
+    event.block.number,
+  );
 
   // add new amount
   liquidity.amount = liquidity.amount.minus(event.params.amount);
@@ -69,11 +79,21 @@ export function handleTransactionPrepared(event: TransactionPrepared): void {
   if (chainId === event.params.txData.receivingChainId) {
     // This is the router-side prepare, should update:
     // - amount -> router liquidity decrements
-    liquidity = getOrCreateLiquidityMetric(timestamp, event.params.txData.receivingAssetId, event.params.router);
+    liquidity = getOrCreateLiquidityMetric(
+      timestamp,
+      event.params.txData.receivingAssetId,
+      event.params.router,
+      event.block.number,
+    );
 
     liquidity.amount = liquidity.amount.minus(event.params.txData.amount);
   } else {
-    liquidity = getOrCreateLiquidityMetric(timestamp, event.params.txData.sendingAssetId, event.params.router);
+    liquidity = getOrCreateLiquidityMetric(
+      timestamp,
+      event.params.txData.sendingAssetId,
+      event.params.router,
+      event.block.number,
+    );
   }
 
   liquidity.preparedTxCount = liquidity.preparedTxCount.plus(BigInt.fromI32(1));
@@ -94,13 +114,23 @@ export function handleTransactionFulfilled(event: TransactionFulfilled): void {
   if (chainId === event.params.args.txData.receivingChainId) {
     // This is the user fulfill, should update:
     // - volume -> router successfully provided this liq
-    liquidity = getOrCreateLiquidityMetric(timestamp, event.params.args.txData.receivingAssetId, event.params.router);
+    liquidity = getOrCreateLiquidityMetric(
+      timestamp,
+      event.params.args.txData.receivingAssetId,
+      event.params.router,
+      event.block.number,
+    );
 
     liquidity.volume = liquidity.volume.plus(event.params.args.txData.amount);
   } else {
     // This is the router fulfill, should update:
     // - amount -> router liquidity increments
-    liquidity = getOrCreateLiquidityMetric(timestamp, event.params.args.txData.sendingAssetId, event.params.router);
+    liquidity = getOrCreateLiquidityMetric(
+      timestamp,
+      event.params.args.txData.sendingAssetId,
+      event.params.router,
+      event.block.number,
+    );
 
     liquidity.amount = liquidity.amount.plus(event.params.args.txData.amount);
   }
@@ -123,12 +153,22 @@ export function handleTransactionCancelled(event: TransactionCancelled): void {
   if (chainId === event.params.args.txData.receivingChainId) {
     // This is the user fulfill, should update:
     // - amount -> router liquidity restored
-    liquidity = getOrCreateLiquidityMetric(timestamp, event.params.args.txData.receivingAssetId, event.params.router);
+    liquidity = getOrCreateLiquidityMetric(
+      timestamp,
+      event.params.args.txData.receivingAssetId,
+      event.params.router,
+      event.block.number,
+    );
 
     liquidity.amount = liquidity.amount.plus(event.params.args.txData.amount);
   } else {
     // This is the user cancel, nothing to update
-    liquidity = getOrCreateLiquidityMetric(timestamp, event.params.args.txData.sendingAssetId, event.params.router);
+    liquidity = getOrCreateLiquidityMetric(
+      timestamp,
+      event.params.args.txData.sendingAssetId,
+      event.params.router,
+      event.block.number,
+    );
   }
 
   liquidity.cancelTxCount = liquidity.cancelTxCount.plus(BigInt.fromI32(1));
@@ -198,7 +238,7 @@ function getChainId(transactionManagerAddress: Address): BigInt {
   return chainId;
 }
 
-function getOrCreateLiquidityMetric(timestamp: BigInt, assetId: Bytes, router: Address): Liquidity {
+function getOrCreateLiquidityMetric(timestamp: BigInt, assetId: Bytes, router: Address, block: BigInt): Liquidity {
   let day = timestamp.toI32() / 86400; // rounded
   let dayStartTimestamp = day * 86400;
 
@@ -208,6 +248,7 @@ function getOrCreateLiquidityMetric(timestamp: BigInt, assetId: Bytes, router: A
   if (metric === null) {
     metric = new Liquidity(liqId);
     metric.dayStartTimestamp = BigInt.fromI32(dayStartTimestamp);
+    metric.dayStartBlock = block;
     metric.router = router.toHex();
     metric.assetId = assetId.toHex();
     metric.supplied = BigInt.fromI32(0);

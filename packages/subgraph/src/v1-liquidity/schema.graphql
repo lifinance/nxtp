@@ -10,6 +10,8 @@ type Liquidity @entity {
   id: ID!
   # timestamp rounded down to nearest hour
   dayStartTimestamp: BigInt!
+  # block when the day starts
+  dayStartBlock: BigInt!
   # router with the entity
   router: Router!
   # assetId

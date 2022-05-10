@@ -70,10 +70,13 @@ export function handleTransactionPrepared(event: TransactionPrepared): void {
   const timestamp = event.block.timestamp;
   const chainId = getChainId(event.address);
 
-  // Update the amount on receiving chain, and the prepared count on both
-  // chains
-  // NOTE: this means the `preparedTxCount` includes user prepares as well as
-  // router prepares, so should reflect the onchain initiated transactions
+  // For the prepared events:
+  // receiving chain (router puts up funds)
+  // - decrement amount
+  // - increment prepared tx count
+
+  // sending chain
+  // - do nothing
 
   let liquidity: Liquidity;
   if (chainId === event.params.txData.receivingChainId) {
@@ -87,16 +90,8 @@ export function handleTransactionPrepared(event: TransactionPrepared): void {
     );
 
     liquidity.amount = liquidity.amount.minus(event.params.txData.amount);
-  } else {
-    liquidity = getOrCreateLiquidityMetric(
-      timestamp,
-      event.params.txData.sendingAssetId,
-      event.params.router,
-      event.block.number,
-    );
+    liquidity.preparedTxCount = liquidity.preparedTxCount.plus(BigInt.fromI32(1));
   }
-
-  liquidity.preparedTxCount = liquidity.preparedTxCount.plus(BigInt.fromI32(1));
 
   liquidity.save();
 }
@@ -110,10 +105,16 @@ export function handleTransactionFulfilled(event: TransactionFulfilled): void {
   const timestamp = event.block.timestamp;
   const chainId = getChainId(event.address);
 
+  // For the fulfilled events:
+  // receiving chain (user gets funds)
+  // - increment volume
+  // - increment fulfilled tx count
+
+  // sending chain
+  // - increment amount
+
   let liquidity: Liquidity;
   if (chainId === event.params.args.txData.receivingChainId) {
-    // This is the user fulfill, should update:
-    // - volume -> router successfully provided this liq
     liquidity = getOrCreateLiquidityMetric(
       timestamp,
       event.params.args.txData.receivingAssetId,
@@ -122,9 +123,9 @@ export function handleTransactionFulfilled(event: TransactionFulfilled): void {
     );
 
     liquidity.volume = liquidity.volume.plus(event.params.args.txData.amount);
+
+    liquidity.fulfilledTxCount = liquidity.fulfilledTxCount.plus(BigInt.fromI32(1));
   } else {
-    // This is the router fulfill, should update:
-    // - amount -> router liquidity increments
     liquidity = getOrCreateLiquidityMetric(
       timestamp,
       event.params.args.txData.sendingAssetId,
@@ -134,8 +135,6 @@ export function handleTransactionFulfilled(event: TransactionFulfilled): void {
 
     liquidity.amount = liquidity.amount.plus(event.params.args.txData.amount);
   }
-
-  liquidity.fulfilledTxCount = liquidity.fulfilledTxCount.plus(BigInt.fromI32(1));
 
   liquidity.save();
 }
@@ -149,6 +148,14 @@ export function handleTransactionCancelled(event: TransactionCancelled): void {
   const timestamp = event.block.timestamp;
   const chainId = getChainId(event.address);
 
+  // For the cancelled events:
+  // receiving chain (router funds returned)
+  // - increment cancelTxCount
+  // - increment amount
+
+  // sending chain (user funds returned)
+  // - do nothing
+
   let liquidity: Liquidity;
   if (chainId === event.params.args.txData.receivingChainId) {
     // This is the user fulfill, should update:
@@ -161,17 +168,9 @@ export function handleTransactionCancelled(event: TransactionCancelled): void {
     );
 
     liquidity.amount = liquidity.amount.plus(event.params.args.txData.amount);
-  } else {
-    // This is the user cancel, nothing to update
-    liquidity = getOrCreateLiquidityMetric(
-      timestamp,
-      event.params.args.txData.sendingAssetId,
-      event.params.router,
-      event.block.number,
-    );
-  }
 
-  liquidity.cancelTxCount = liquidity.cancelTxCount.plus(BigInt.fromI32(1));
+    liquidity.cancelTxCount = liquidity.cancelTxCount.plus(BigInt.fromI32(1));
+  }
 
   liquidity.save();
 }
@@ -200,14 +199,16 @@ function getChainId(transactionManagerAddress: Address): BigInt {
     chainId = BigInt.fromI32(97);
   } else if (network == "xdai") {
     chainId = BigInt.fromI32(100);
+  } else if (network == "fuse") {
+    chainId = BigInt.fromI32(122);
   } else if (network == "matic") {
     chainId = BigInt.fromI32(137);
   } else if (network == "fantom") {
     chainId = BigInt.fromI32(250);
-  } else if (network == "moonbeam") {
-    chainId = BigInt.fromI32(1284);
   } else if (network == "boba") {
     chainId = BigInt.fromI32(288);
+  } else if (network == "moonbeam") {
+    chainId = BigInt.fromI32(1284);
   } else if (network == "moonriver") {
     chainId = BigInt.fromI32(1285);
   } else if (network == "mbase") {

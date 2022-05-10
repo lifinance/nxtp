@@ -91,9 +91,8 @@ export function handleTransactionPrepared(event: TransactionPrepared): void {
 
     liquidity.amount = liquidity.amount.minus(event.params.txData.amount);
     liquidity.preparedTxCount = liquidity.preparedTxCount.plus(BigInt.fromI32(1));
+    liquidity.save();
   }
-
-  liquidity.save();
 }
 
 export function handleTransactionFulfilled(event: TransactionFulfilled): void {
@@ -170,9 +169,8 @@ export function handleTransactionCancelled(event: TransactionCancelled): void {
     liquidity.amount = liquidity.amount.plus(event.params.args.txData.amount);
 
     liquidity.cancelTxCount = liquidity.cancelTxCount.plus(BigInt.fromI32(1));
+    liquidity.save();
   }
-
-  liquidity.save();
 }
 
 function getChainId(transactionManagerAddress: Address): BigInt {

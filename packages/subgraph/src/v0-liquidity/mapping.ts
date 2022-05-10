@@ -79,7 +79,7 @@ export function handleTransactionPrepared(event: TransactionPrepared): void {
   // - do nothing
 
   let liquidity: Liquidity;
-  if (chainId === event.params.txData.receivingChainId) {
+  if (chainId == event.params.txData.receivingChainId) {
     // This is the router-side prepare, should update:
     // - amount -> router liquidity decrements
     liquidity = getOrCreateLiquidityMetric(
@@ -113,7 +113,7 @@ export function handleTransactionFulfilled(event: TransactionFulfilled): void {
   // - increment amount
 
   let liquidity: Liquidity;
-  if (chainId === event.params.txData.receivingChainId) {
+  if (chainId == event.params.txData.receivingChainId) {
     // This is the user fulfill, should update:
     // - volume -> router successfully provided this liq
     liquidity = getOrCreateLiquidityMetric(
@@ -160,7 +160,7 @@ export function handleTransactionCancelled(event: TransactionCancelled): void {
   // - do nothing
 
   let liquidity: Liquidity;
-  if (chainId === event.params.txData.receivingChainId) {
+  if (chainId == event.params.txData.receivingChainId) {
     // This is the user fulfill, should update:
     // - amount -> router liquidity restored
     liquidity = getOrCreateLiquidityMetric(

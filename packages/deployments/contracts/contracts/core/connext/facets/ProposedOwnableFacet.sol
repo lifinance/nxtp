@@ -43,9 +43,11 @@ contract ProposedOwnableFacet is BaseConnextFacet, IProposedOwnable {
   error ProposedOwnableFacet__acceptProposedOwner_noOwnershipChange();
   error ProposedOwnableFacet__acceptProposedOwner_delayNotElapsed();
 
-  // ============ Properties ============
+  // ============ Constants ============
 
   uint256 private constant _delay = 7 days;
+
+  // ============ Events ============
 
   event RouterOwnershipRenunciationProposed(uint256 timestamp);
 
@@ -54,6 +56,8 @@ contract ProposedOwnableFacet is BaseConnextFacet, IProposedOwnable {
   event AssetOwnershipRenunciationProposed(uint256 timestamp);
 
   event AssetOwnershipRenounced(bool renounced);
+
+  // ============ Getters ============
 
   /**
    * @notice Returns the address of the current owner.
@@ -110,6 +114,8 @@ contract ProposedOwnableFacet is BaseConnextFacet, IProposedOwnable {
   function delay() public view returns (uint256) {
     return _delay;
   }
+
+  // ============ External ============
 
   /**
    * @notice Indicates if the ownership of the router whitelist has
@@ -240,7 +246,7 @@ contract ProposedOwnableFacet is BaseConnextFacet, IProposedOwnable {
     _setOwner(s._proposed);
   }
 
-  ////// INTERNAL //////
+  // ============ Internal ============
 
   function _setRouterOwnershipTimestamp() private {
     s._routerOwnershipTimestamp = block.timestamp;

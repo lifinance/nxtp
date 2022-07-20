@@ -4,6 +4,8 @@ import {
   SubgraphQueryByTimestampMetaParams,
   SubgraphQueryByTransferIDsMetaParams,
   XTransfer,
+  createRequestContext,
+  XTransferStatus,
 } from "@connext/nxtp-utils";
 
 import { getContext } from "../../shared";
@@ -108,6 +110,13 @@ export const updateTransfers = async () => {
         if (domainTransfers.length > 0 && max > latest) {
           await database.saveCheckPoint("origin_nonce_" + domain, max);
         }
+
+        domainTransfers.map((transfer) => {
+          const txRequestContex = createRequestContext(requestContext.origin, transfer.transferId);
+          logger.debug("Transfer XCalled", txRequestContex, methodContext, {
+            status: XTransferStatus.XCalled,
+          });
+        });
       }),
     );
   }
@@ -115,7 +124,7 @@ export const updateTransfers = async () => {
   if (subgraphDestinationQueryMetaParams.size > 0) {
     // Get destination transfers for all domains in the mapping.
     const transfers = await subgraph.getDestinationTransfersByNonce(subgraphDestinationQueryMetaParams);
-    logger.info("Retrieved destination transfers by nonce", requestContext, methodContext, {
+    logger.debug("Retrieved destination transfers by nonce", requestContext, methodContext, {
       transfers: transfers,
       count: transfers.length,
     });
@@ -129,6 +138,13 @@ export const updateTransfers = async () => {
         if (domainTransfers.length > 0 && max > latest) {
           await database.saveCheckPoint("destination_nonce_" + domain, max);
         }
+
+        domainTransfers.map((transfer) => {
+          const txRequestContex = createRequestContext(requestContext.origin, transfer.transferId);
+          logger.debug("Updated Transfer", txRequestContex, methodContext, {
+            status: transfer.destination?.status,
+          });
+        });
       }),
     );
   }
@@ -150,6 +166,13 @@ export const updateTransfers = async () => {
       if (domainTransfers.length > 0 && max > latest) {
         await database.saveCheckPoint("destination_reconcile_timestamp_" + domain, max);
       }
+
+      domainTransfers.map((transfer) => {
+        const txRequestContex = createRequestContext(requestContext.origin, transfer.transferId);
+        logger.debug("Updated Transfer", txRequestContex, methodContext, {
+          status: transfer.destination?.status,
+        });
+      });
     }),
   );
 

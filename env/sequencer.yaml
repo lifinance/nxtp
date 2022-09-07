@@ -1,0 +1,74 @@
+live-service: &live-service
+  logLevel: debug
+  server:
+    pub:
+      port: 8080
+    sub:
+      port: 8080
+    exec:
+      port: 8080
+
+local-service: &local-service
+  adminToken: b
+  server:
+    pub:
+      port: 8081
+    sub:
+      port: 8081
+    exec:
+      port: 8081
+
+default: &default-config
+  mode:
+    cleanup: false
+  auctionWaitTime: 30000
+
+testnet:
+  staging: &sequencer-testnet-staging
+    <<: *default-config
+    <<: *live-service
+    environment: staging
+    redis:
+      host: redis-cluster-testnet-staging-sequencer.njrwqg.0001.use1.cache.amazonaws.com
+      port: 6379
+    web3SignerUrl: https://sequencer-web3signer.testnet.staging.connext.ninja
+    messageQueue:
+      uri: "amqps://${rmq_mgt_user}:${rmq_mgt_password}@b-b1d76552-083f-4751-80cc-1443db0e19a3.mq.us-east-1.amazonaws.com"
+    adminToken: ${admin_token_sequencer}
+
+  prod: &sequencer-testnet-production
+    <<: *default-config
+    <<: *live-service
+    environment: prod
+    redis:
+      host: redis-cluster-testnet-production-sequencer.vkqmjw.0001.usw1.cache.amazonaws.com
+      port: 6379
+    web3SignerUrl: https://sequencer-web3signer.staging.connext.ninja
+    messageQueue:
+      uri: "amqps://${rmq_mgt_user}:${rmq_mgt_password}@b-8e091635-08a4-4bd0-856c-aefadfa2fb07.mq.us-west-1.amazonaws.com"
+    adminToken: ${admin_token_sequencer}
+
+mainnet:
+  prod:
+    <<: *default-config
+    <<: *live-service
+    environment: prod
+    redis:
+      host: redis-cluster-testnet-production-sequencer.vkqmjw.0001.usw1.cache.amazonaws.com
+      port: 6379
+    web3SignerUrl: https://sequencer-web3signer.staging.connext.ninja
+    messageQueue:
+      uri: "amqps://${rmq_mgt_user}:${rmq_mgt_password}@b-8e091635-08a4-4bd0-856c-aefadfa2fb07.mq.us-west-1.amazonaws.com"
+    adminToken: ${admin_token_sequencer}
+
+local:
+  <<: *local-service
+  environment: prod
+  redis:
+    host: router-cache
+    port: 6379
+  web3SignerUrl: http://signer-sequencer:9000
+  sequencerUrl: http://sequencer-publisher:8081
+  messageQueue:
+    uri: amqp://guest:guest@message-queue:5672
+  nomadEnvironment: none

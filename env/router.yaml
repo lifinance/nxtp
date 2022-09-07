@@ -1,0 +1,95 @@
+live-service: &live-service
+  logLevel: debug
+  server:
+    pub:
+      port: 8080
+    sub:
+      port: 8080
+    exec:
+      port: 8080
+
+local-service: &local-service
+  adminToken: b
+  server:
+    pub:
+      port: 8091
+    sub:
+      port: 8090
+    exec:
+      port: 8092
+
+default: &default-config
+  mode:
+    cleanup: false
+  auctionWaitTime: 30000
+
+# LOCAL CONFIG -- EDIT AS NEEDED
+
+local: &router-local
+  <<: *local-service
+  <<: *default-config
+  environment: prod
+  redis:
+    host: router-cache
+    port: 6379
+  web3SignerUrl: http://signer-router:9000
+  sequencerUrl: http://router-publisher:8081
+  cartographerUrl: http://cartographer-api:3000
+  messageQueue:
+    uri: amqp://guest:guest@message-queue:5672
+  nomadEnvironment: none
+  network: mainnet
+
+# LIVE CONFIGS -- DO NOT EDIT
+
+testnet:
+  local: *router-local
+  staging: &router-testnet-staging
+    <<: *default-config
+    <<: *live-service
+    adminToken: ${admin_token_router}
+    environment: staging
+    redis:
+      host: redis-cluster-testnet-staging-router.njrwqg.0001.use1.cache.amazonaws.com
+      port: 6379
+    web3SignerUrl: https://router-web3signer.testnet.staging.connext.ninja
+    sequencerUrl: https://sequencer-publisher.testnet.staging.connext.ninja
+    cartographerUrl: https://postgrest.testnet.staging.connext.ninja
+    messageQueue:
+      uri: "amqps://${rmq_mgt_user}:${rmq_mgt_password}@b-b1d76552-083f-4751-80cc-1443db0e19a3.mq.us-east-1.amazonaws.com"
+    nomadEnvironment: none
+    network: testnet
+
+  prod: &router-testnet-production
+    <<: *default-config
+    <<: *live-service
+    adminToken: ${admin_token_router}
+    environment: prod
+    redis:
+      host: redis-cluster-testnet-production-router.vkqmjw.0001.usw1.cache.amazonaws.com
+      port: 6379
+    web3SignerUrl: https://router-web3signer.testnet.connext.ninja
+    sequencerUrl: https://sequencer-publisher.testnet.connext.ninja
+    cartographerUrl: "https://postgrest.testnet.connext.ninja"
+    messageQueue:
+      uri: "amqps://${rmq_mgt_user}:${rmq_mgt_password}@b-8e091635-08a4-4bd0-856c-aefadfa2fb07.mq.us-west-1.amazonaws.com"
+    nomadEnvironment: none
+    network: testnet
+
+mainnet:
+  local: *router-local
+  prod: &router-mainnet-production
+    <<: *default-config
+    <<: *live-service
+    adminToken: ${admin_token_router}
+    environment: prod
+    redis:
+      host: redis-cluster-mainnet-production-router.ldcayc.0001.use2.cache.amazonaws.com
+      port: 6379
+    web3SignerUrl: https://router-web3signer.mainnet.connext.ninja
+    sequencerUrl: https://sequencer-publisher.mainnet.connext.ninja
+    cartographerUrl: "https://postgrest.mainnet.connext.ninja"
+    messageQueue:
+      uri: "amqps://${rmq_mgt_user}:${rmq_mgt_password}@b-8e091635-08a4-4bd0-856c-aefadfa2fb07.mq.us-west-1.amazonaws.com"
+    nomadEnvironment: none
+    network: mainnet

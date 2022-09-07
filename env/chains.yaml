@@ -1,0 +1,51 @@
+local: &local-chain-config
+  "1337":
+    providers:
+      - http://chain-1337:8545
+    assets:
+      - address: "0x8065F4c7b8c2bf53561af92D9DA2Ea022A0b28Ca"
+        name: TEST
+    deployments:
+      connext: "0x1411CB266FCEd1587b0AA29E9d5a9Ef3Db64A9C5"
+  "1338":
+    providers:
+      - http://chain-1337:8545
+    assets:
+      - address: "0x2467636BEa0F3c2441227eeDBfFaC59f11D54a80"
+        name: TEST
+    deployments:
+      connext: "0x74e3FC764c2474f25369B9d021b7F92e8441A2Dc"
+
+testnet:
+  local: *local-chain-config
+  staging: &testnet-chain-config
+    "1735356532":
+      providers:
+        - https://opt-goerli.g.alchemy.com/v2/${optgoerli_alchemy_key_0}
+        - https://goerli.optimism.io
+      assets:
+        - address: 0x68Db1c8d85C09d546097C65ec7DCBFF4D6497CbF
+          name: TEST
+        - address: 0x39B061B7e41DE8B721f9aEcEB6b3f17ECB7ba63E
+          name: WETH
+    "1735353714":
+      providers:
+        - https://eth-goerli.alchemyapi.io/v2/${goerli_alchemy_key_0}
+        - https://rpc.ankr.com/eth_goerli
+      assets:
+        - address: 0x7ea6eA49B0b0Ae9c5db7907d139D9Cd3439862a1
+          name: TEST
+        - address: 0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6
+          name: WETH
+  prod: *testnet-chain-config
+
+mainnet:
+  local: *local-chain-config
+  prod:
+    "1":
+      providers:
+        - https://eth-mainnet.alchemyapi.io/v2/${mainnet_alchemy_key_0}
+        - https://rpc.ankr.com/eth_mainnet
+      assets:
+        - address: 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48
+          name: USDC

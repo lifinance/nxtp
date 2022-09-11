@@ -34,3 +34,13 @@ mq-config: check-ENV check-STAGE
 	@sops exec-env env/secrets/${ENV}.${STAGE}.env \
 	'yq -o json '\''(.. | select(tag == "!!str")) |= envsubst(ne) | .${ENV}.${STAGE} | explode(.)'\'' env/mq.yaml'
 
+
+run-service:
+	# generate config
+	# run service with generated config 
+
+live-config: check-ENV check-STAGE
+live-config: router-config
+live-config: sequencer-config
+live-config: chain-config
+live-config: mq-config

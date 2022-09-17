@@ -1,0 +1,152 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AssetBalances {
+  asset_canonical_id String  @db.Char(66)
+  asset_domain       String  @db.VarChar(255)
+  router_address     String  @db.Char(42)
+  balance            Decimal @default(0) @db.Decimal
+  assets             Assets  @relation(fields: [asset_canonical_id, asset_domain], references: [canonical_id, domain], onDelete: NoAction, onUpdate: NoAction, map: "fk_asset")
+  routers            Routers @relation(fields: [router_address], references: [address], onDelete: NoAction, onUpdate: NoAction, map: "fk_router")
+
+  @@id([asset_canonical_id, asset_domain, router_address])
+  @@map("asset_balances")
+}
+
+model Assets {
+  local            String          @db.Char(42)
+  adopted          String          @db.Char(42)
+  canonical_id     String          @db.Char(66)
+  canonical_domain String          @db.VarChar(255)
+  domain           String          @db.VarChar(255)
+  asset_balances   AssetBalances[]
+
+  @@id([canonical_id, domain])
+  @@map("assets")
+}
+
+model Checkpoints {
+  check_name  String  @id @db.VarChar(255)
+  check_point Decimal @default(0) @db.Decimal
+
+  @@map("checkpoints")
+}
+
+model Messages {
+  leaf               String   @id @db.Char(66)
+  origin_domain      String   @db.VarChar(255)
+  destination_domain String?  @db.VarChar(255)
+  index              Decimal? @db.Decimal
+  root               String?  @db.Char(66)
+  message            String?  @db.VarChar
+  processed          Boolean? @default(false)
+  return_data        String?  @db.VarChar(255)
+
+  @@map("messages")
+}
+
+model ProcessedRootMessages {
+  id                  String   @id @db.Char(66)
+  spoke_domain        String?  @db.VarChar(255)
+  hub_domain          String?  @db.VarChar(255)
+  root                String?  @db.Char(66)
+  caller              String?  @db.Char(42)
+  transaction_hash    String?  @db.Char(66)
+  processed_timestamp Int?
+  gas_price           Decimal? @db.Decimal
+  gas_limit           Decimal? @db.Decimal
+  block_number        Int?
+
+  @@map("processed_root_messages")
+}
+
+model Routers {
+  address        String          @id @db.Char(42)
+  asset_balances AssetBalances[]
+
+  @@map("routers")
+}
+
+model SentRootMessages {
+  id               String   @id @db.Char(66)
+  spoke_domain     String?  @db.VarChar(255)
+  hub_domain       String?  @db.VarChar(255)
+  root             String?  @db.Char(66)
+  caller           String?  @db.Char(42)
+  transaction_hash String?  @db.Char(66)
+  sent_timestamp   Int?
+  gas_price        Decimal? @db.Decimal
+  gas_limit        Decimal? @db.Decimal
+  block_number     Int?
+
+  @@map("sent_root_messages")
+}
+
+model Transfers {
+  transfer_id                      String         @id @db.Char(66)
+  nonce                            BigInt?
+  to                               String?        @db.Char(42)
+  call_data                        String?
+  origin_domain                    String         @db.VarChar(255)
+  destination_domain               String?        @db.VarChar(255)
+  recovery                         String?        @db.Char(42)
+  force_slow                       Boolean?
+  receive_local                    Boolean?
+  callback                         String?        @db.Char(42)
+  callback_fee                     Decimal?       @db.Decimal
+  relayer_fee                      Decimal?       @db.Decimal
+  origin_chain                     String?        @db.VarChar(255)
+  origin_transacting_asset         String?        @db.Char(42)
+  origin_transacting_amount        Decimal?       @db.Decimal
+  origin_bridged_asset             String?        @db.Char(42)
+  origin_bridged_amount            Decimal?       @db.Decimal
+  xcall_caller                     String?        @db.Char(42)
+  xcall_transaction_hash           String?        @db.Char(66)
+  xcall_timestamp                  Int?
+  xcall_gas_price                  Decimal?       @db.Decimal
+  xcall_gas_limit                  Decimal?       @db.Decimal
+  xcall_block_number               Int?
+  destination_chain                String?        @db.VarChar(255)
+  status                           TransferStatus @default(XCalled)
+  routers                          String[]       @db.Char(42)
+  destination_transacting_asset    String?        @db.Char(42)
+  destination_transacting_amount   Decimal?       @db.Decimal
+  destination_local_asset          String?        @db.Char(42)
+  destination_local_amount         Decimal?       @db.Decimal
+  execute_caller                   String?        @db.Char(42)
+  execute_transaction_hash         String?        @db.Char(66)
+  execute_timestamp                Int?
+  execute_gas_price                Decimal?       @db.Decimal
+  execute_gas_limit                Decimal?       @db.Decimal
+  execute_block_number             Int?
+  execute_origin_sender            String?        @db.Char(42)
+  reconcile_caller                 String?        @db.Char(42)
+  reconcile_transaction_hash       String?        @db.Char(66)
+  reconcile_timestamp              Int?
+  reconcile_gas_price              Decimal?       @db.Decimal
+  reconcile_gas_limit              Decimal?       @db.Decimal
+  reconcile_block_number           Int?
+  update_time                      DateTime       @default(now()) @db.Timestamp(6)
+  agent                            String?        @db.Char(42)
+  destination_min_out              Decimal?       @db.Decimal
+  transfer_status_update_by_agent  String?        @db.Char(42)
+  transfer_status_message_by_agent String?        @db.Char(42)
+
+  @@map("transfers")
+}
+
+enum TransferStatus {
+  XCalled
+  Executed
+  Reconciled
+  CompletedSlow
+  CompletedFast
+
+  @@map("transfer_status")
+}

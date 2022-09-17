@@ -19,6 +19,7 @@
     "verify": "yarn test && yarn clean && yarn build && yarn lint --max-warnings 0",
     "purge": "yarn clean && rimraf ./coverage ./node_modules",
     "tsp": "yarn run tsp:root \"$@\" --cwd $(pwd)",
+    "prisma": "prisma",
     "zapatos": "zapatos",
     "dbmate": "dbmate"
   },
@@ -27,6 +28,7 @@
   "dependencies": {
     "@connext/nxtp-adapters-subgraph": "workspace:*",
     "@connext/nxtp-utils": "workspace:*",
+    "@prisma/client": "^4.3.1",
     "@sinclair/typebox": "0.24.39",
     "dd-trace": "3.2.0",
     "dotenv": "16.0.2",
@@ -43,6 +45,7 @@
     "nyc": "15.1.0",
     "pg-mem": "2.6.3",
     "pino-pretty": "9.1.0",
+    "prisma": "^4.3.1",
     "rimraf": "3.0.2",
     "sinclair": "0.2.0",
     "sinon": "14.0.0",

@@ -12,13 +12,22 @@ import * as db from "zapatos/db";
 import { raw } from "zapatos/db";
 import type * as s from "zapatos/schema";
 import { BigNumber } from "ethers";
+import {
+  PrismaClient,
+  TransferStatus,
+  Prisma,
+  Transfers,
+  Messages,
+  SentRootMessages,
+  ProcessedRootMessages,
+} from "@prisma/client";
 
 import { pool } from "./index";
 
-const convertToDbTransfer = (transfer: XTransfer): s.transfers.Insertable => {
+const convertToDbTransfer = (transfer: XTransfer): Transfers => {
   return {
     transfer_id: transfer.transferId,
-    nonce: transfer.nonce,
+    nonce: transfer.nonce ? BigInt(transfer.nonce) : null,
 
     to: transfer.xparams?.to,
     call_data: transfer.xparams?.callData,
@@ -36,57 +45,74 @@ const convertToDbTransfer = (transfer: XTransfer): s.transfers.Insertable => {
     force_slow: transfer.xparams?.forceSlow,
     receive_local: transfer.xparams?.receiveLocal,
 
-    origin_chain: transfer.origin?.chain,
-    origin_transacting_asset: transfer.origin?.assets.transacting.asset,
-    origin_transacting_amount: transfer.origin?.assets.transacting.amount as any,
-    origin_bridged_asset: transfer.origin?.assets.bridged.asset,
+    origin_chain: transfer.origin?.chain ?? null,
+    origin_transacting_asset: transfer.origin?.assets.transacting.asset ?? null,
+    origin_transacting_amount: transfer.origin?.assets.transacting.amount
+      ? new Prisma.Decimal(transfer.origin?.assets.transacting.amount)
+      : null,
+    origin_bridged_asset: transfer.origin?.assets.bridged.asset ?? null,
     origin_bridged_amount: transfer.origin?.assets.bridged.amount as any,
-    xcall_caller: transfer.origin?.xcall.caller,
-    xcall_transaction_hash: transfer.origin?.xcall?.transactionHash,
-    xcall_timestamp: transfer.origin?.xcall?.timestamp,
+    xcall_caller: transfer.origin?.xcall.caller ?? null,
+    xcall_transaction_hash: transfer.origin?.xcall?.transactionHash ?? null,
+    xcall_timestamp: transfer.origin?.xcall?.timestamp ?? null,
     xcall_gas_price: transfer.origin?.xcall?.gasPrice as any,
     xcall_gas_limit: transfer.origin?.xcall?.gasLimit as any,
-    xcall_block_number: transfer.origin?.xcall?.blockNumber,
+    xcall_block_number: transfer.origin?.xcall?.blockNumber ?? null,
 
-    destination_chain: transfer.destination?.chain,
-    status: transfer.destination?.status,
-    routers: transfer.destination?.routers,
-    destination_transacting_asset: transfer.destination?.assets.transacting?.asset,
-    destination_transacting_amount: transfer.destination?.assets.transacting?.amount as any,
-    destination_local_asset: transfer.destination?.assets.local?.asset,
-    destination_local_amount: transfer.destination?.assets.local?.amount as any,
+    destination_chain: transfer.destination?.chain ?? null,
+    status: transfer.destination?.status ?? TransferStatus.XCalled,
+    routers: transfer.destination?.routers ?? [],
+    destination_transacting_asset: transfer.destination?.assets.transacting?.asset ?? null,
+    destination_transacting_amount: transfer.destination?.assets.transacting?.amount
+      ? new Prisma.Decimal(transfer.destination?.assets.transacting?.amount)
+      : null,
+    destination_local_asset: transfer.destination?.assets.local?.asset ?? null,
+    destination_local_amount: transfer.destination?.assets.local?.amount
+      ? new Prisma.Decimal(transfer.destination?.assets.local?.amount)
+      : null,
 
-    execute_caller: transfer.destination?.execute?.caller,
-    execute_transaction_hash: transfer.destination?.execute?.transactionHash,
-    execute_timestamp: transfer.destination?.execute?.timestamp,
-    execute_gas_price: transfer.destination?.execute?.gasPrice as any,
-    execute_gas_limit: transfer.destination?.execute?.gasLimit as any,
-    execute_block_number: transfer.destination?.execute?.blockNumber,
-    execute_origin_sender: transfer.destination?.execute?.originSender,
+    execute_caller: transfer.destination?.execute?.caller ?? null,
+    execute_transaction_hash: transfer.destination?.execute?.transactionHash ?? null,
+    execute_timestamp: transfer.destination?.execute?.timestamp ?? null,
+    execute_gas_price: transfer.destination?.execute?.gasPrice
+      ? new Prisma.Decimal(transfer.destination?.execute?.gasPrice)
+      : null,
+    execute_gas_limit: transfer.destination?.execute?.gasLimit
+      ? new Prisma.Decimal(transfer.destination?.execute?.gasLimit)
+      : null,
+    execute_block_number: transfer.destination?.execute?.blockNumber ?? null,
+    execute_origin_sender: transfer.destination?.execute?.originSender ?? null,
 
-    reconcile_caller: transfer.destination?.reconcile?.caller,
-    reconcile_transaction_hash: transfer.destination?.reconcile?.transactionHash,
-    reconcile_timestamp: transfer.destination?.reconcile?.timestamp,
-    reconcile_gas_price: transfer.destination?.reconcile?.gasPrice as any,
-    reconcile_gas_limit: transfer.destination?.reconcile?.gasLimit as any,
-    reconcile_block_number: transfer.destination?.reconcile?.blockNumber,
+    reconcile_caller: transfer.destination?.reconcile?.caller ?? null,
+    reconcile_transaction_hash: transfer.destination?.reconcile?.transactionHash ?? null,
+    reconcile_timestamp: transfer.destination?.reconcile?.timestamp ?? null,
+    reconcile_gas_price: transfer.destination?.reconcile?.gasPrice
+      ? new Prisma.Decimal(transfer.destination?.reconcile?.gasPrice)
+      : null,
+    reconcile_gas_limit: transfer.destination?.reconcile?.gasLimit
+      ? new Prisma.Decimal(transfer.destination?.reconcile?.gasLimit)
+      : null,
+    reconcile_block_number: transfer.destination?.reconcile?.blockNumber ?? null,
+    update_time: new Date(),
+    transfer_status_message_by_agent: null,
+    transfer_status_update_by_agent: null,
   };
 };
 
-const convertToDbMessage = (message: XMessage): s.messages.Insertable => {
+const convertToDbMessage = (message: XMessage): Messages => {
   return {
     leaf: message.leaf,
     origin_domain: message.originDomain,
     destination_domain: message.destinationDomain,
-    index: message.origin?.index,
+    index: message.origin?.index ? new Prisma.Decimal(message.origin?.index) : null,
     root: message.origin?.root,
     message: message.origin?.message,
-    processed: message.destination?.processed,
-    return_data: message.destination?.returnData,
+    processed: message.destination?.processed ?? null,
+    return_data: message.destination?.returnData ?? null,
   };
 };
 
-const convertToDbSentRootMessage = (message: RootMessage): s.sent_root_messages.Insertable => {
+const convertToDbSentRootMessage = (message: RootMessage): SentRootMessages => {
   return {
     id: message.id,
     spoke_domain: message.spokeDomain,
@@ -95,13 +121,13 @@ const convertToDbSentRootMessage = (message: RootMessage): s.sent_root_messages.
     caller: message.caller,
     transaction_hash: message.transactionHash,
     sent_timestamp: message.timestamp,
-    gas_price: message.gasPrice,
-    gas_limit: message.gasLimit,
+    gas_price: new Prisma.Decimal(message.gasPrice as number),
+    gas_limit: new Prisma.Decimal(message.gasLimit as number),
     block_number: message.blockNumber,
   };
 };
 
-const convertToDbProcessedRootMessage = (message: RootMessage): s.processed_root_messages.Insertable => {
+const convertToDbProcessedRootMessage = (message: RootMessage): ProcessedRootMessages => {
   return {
     id: message.id,
     spoke_domain: message.spokeDomain,
@@ -110,8 +136,8 @@ const convertToDbProcessedRootMessage = (message: RootMessage): s.processed_root
     caller: message.caller,
     transaction_hash: message.transactionHash,
     processed_timestamp: message.timestamp,
-    gas_price: message.gasPrice,
-    gas_limit: message.gasLimit,
+    gas_price: new Prisma.Decimal(message.gasPrice as number),
+    gas_limit: new Prisma.Decimal(message.gasLimit as number),
     block_number: message.blockNumber,
   };
 };
@@ -120,9 +146,12 @@ const sanitizeNull = (obj: { [s: string]: any }): any => {
   return Object.fromEntries(Object.entries(obj).filter(([_, v]) => v != null));
 };
 
-export const saveTransfers = async (xtransfers: XTransfer[], _pool?: Pool): Promise<void> => {
+export const saveTransfers = async (client: PrismaClient, xtransfers: XTransfer[], _pool?: Pool): Promise<void> => {
   const poolToUse = _pool ?? pool;
-  const transfers: s.transfers.Insertable[] = xtransfers.map(convertToDbTransfer);
+  const transfers = xtransfers.map(convertToDbTransfer);
+  await client.$transaction(
+    transfers.map((t) => client.transfers.upsert({ create: t, update: t, where: { transfer_id: t.transfer_id } })),
+  );
 
   // TODO: make this a single query! we should be able to do this with postgres
   // TODO: Perfomance implications to be evaluated. Upgrade to batching of configured batch size N.

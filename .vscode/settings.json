@@ -13,5 +13,8 @@
   "[sql]": {
     "editor.defaultFormatter": "mtxr.sqltools"
   },
-  "solidity.compileUsingRemoteVersion": "v0.8.15+commit.e14f2714"
+  "solidity.compileUsingRemoteVersion": "v0.8.15+commit.e14f2714",
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma"
+  }
 }

@@ -12,8 +12,8 @@ model AssetBalances {
   asset_domain       String  @db.VarChar(255)
   router_address     String  @db.Char(42)
   balance            Decimal @default(0) @db.Decimal
-  assets             Assets  @relation(fields: [asset_canonical_id, asset_domain], references: [canonical_id, domain], onDelete: NoAction, onUpdate: NoAction, map: "fk_asset")
-  routers            Routers @relation(fields: [router_address], references: [address], onDelete: NoAction, onUpdate: NoAction, map: "fk_router")
+  asset              Assets  @relation(fields: [asset_canonical_id, asset_domain], references: [canonical_id, domain], onDelete: NoAction, onUpdate: NoAction, map: "fk_asset")
+  router             Routers @relation(fields: [router_address], references: [address], onDelete: NoAction, onUpdate: NoAction, map: "fk_router")
 
   @@id([asset_canonical_id, asset_domain, router_address])
   @@map("asset_balances")

@@ -6,6 +6,7 @@ import {
   XMessage,
   RootMessage,
   convertFromDbMessage,
+  Asset,
 } from "@connext/nxtp-utils";
 import { Pool } from "pg";
 import * as db from "zapatos/db";
@@ -20,6 +21,7 @@ import {
   Messages,
   SentRootMessages,
   ProcessedRootMessages,
+  AssetBalances,
 } from "@prisma/client";
 
 import { pool } from "./index";
@@ -146,82 +148,49 @@ const sanitizeNull = (obj: { [s: string]: any }): any => {
   return Object.fromEntries(Object.entries(obj).filter(([_, v]) => v != null));
 };
 
-export const saveTransfers = async (client: PrismaClient, xtransfers: XTransfer[], _pool?: Pool): Promise<void> => {
-  const poolToUse = _pool ?? pool;
+export const saveTransfers = async (client: PrismaClient, xtransfers: XTransfer[]): Promise<void> => {
   const transfers = xtransfers.map(convertToDbTransfer);
   await client.$transaction(
     transfers.map((t) => client.transfers.upsert({ create: t, update: t, where: { transfer_id: t.transfer_id } })),
   );
-
-  // TODO: make this a single query! we should be able to do this with postgres
-  // TODO: Perfomance implications to be evaluated. Upgrade to batching of configured batch size N.
-  for (const oneTransfer of transfers) {
-    const transfer = sanitizeNull(oneTransfer);
-    await db.sql<s.transfers.SQL, s.transfers.JSONSelectable[]>`INSERT INTO ${"transfers"} (${db.cols(transfer)})
-    VALUES (${db.vals(transfer)}) ON CONFLICT ("transfer_id") DO UPDATE SET (${db.cols(transfer)}) = (${db.vals(
-      transfer,
-    )}) RETURNING *`.run(poolToUse);
-  }
 };
 
-export const saveMessages = async (xMessages: XMessage[], _pool?: Pool): Promise<void> => {
+export const saveMessages = async (client: PrismaClient, xMessages: XMessage[]): Promise<void> => {
   // The `xMessages` are the ones retrieved only from the origin or destination domain
-  const poolToUse = _pool ?? pool;
-  const messages: s.messages.Insertable[] = xMessages.map(convertToDbMessage);
+  const messages = xMessages.map(convertToDbMessage);
 
-  for (const oneMessage of messages) {
-    const message = sanitizeNull(oneMessage);
-    await db.sql<s.messages.SQL, s.messages.JSONSelectable[]>`INSERT INTO ${"messages"} (${db.cols(message)})
-    VALUES (${db.vals(message)}) ON CONFLICT ("leaf") DO UPDATE SET (${db.cols(message)}) = (${db.vals(
-      message,
-    )}) RETURNING *`.run(poolToUse);
-  }
+  await client.$transaction(
+    messages.map((m) => client.messages.upsert({ create: m, update: m, where: { leaf: m.leaf } })),
+  );
 };
 
-export const saveSentRootMessages = async (_messages: RootMessage[], _pool?: Pool): Promise<void> => {
-  const poolToUse = _pool ?? pool;
-  const messages: s.sent_root_messages.Insertable[] = _messages.map(convertToDbSentRootMessage);
+export const saveSentRootMessages = async (client: PrismaClient, _messages: RootMessage[]): Promise<void> => {
+  const messages = _messages.map(convertToDbSentRootMessage);
 
-  for (const oneMessage of messages) {
-    const message = sanitizeNull(oneMessage);
-    await db.sql<
-      s.sent_root_messages.SQL,
-      s.sent_root_messages.JSONSelectable[]
-    >`INSERT INTO ${"sent_root_messages"} (${db.cols(message)})
-    VALUES (${db.vals(message)}) ON CONFLICT ("id") DO UPDATE SET (${db.cols(message)}) = (${db.vals(
-      message,
-    )}) RETURNING *`.run(poolToUse);
-  }
+  await client.$transaction(
+    messages.map((m) => client.sentRootMessages.upsert({ create: m, update: m, where: { id: m.id } })),
+  );
 };
 
-export const saveProcessedRootMessages = async (_messages: RootMessage[], _pool?: Pool): Promise<void> => {
-  const poolToUse = _pool ?? pool;
-  const messages: s.processed_root_messages.Insertable[] = _messages.map(convertToDbProcessedRootMessage);
+export const saveProcessedRootMessages = async (client: PrismaClient, _messages: RootMessage[]): Promise<void> => {
+  const messages = _messages.map(convertToDbProcessedRootMessage);
 
-  for (const oneMessage of messages) {
-    const message = sanitizeNull(oneMessage);
-    await db.sql<
-      s.processed_root_messages.SQL,
-      s.processed_root_messages.JSONSelectable[]
-    >`INSERT INTO ${"processed_root_messages"} (${db.cols(message)})
-    VALUES (${db.vals(message)}) ON CONFLICT ("id") DO UPDATE SET (${db.cols(message)}) = (${db.vals(
-      message,
-    )}) RETURNING *`.run(poolToUse);
-  }
+  await client.$transaction(
+    messages.map((m) => client.processedRootMessages.upsert({ create: m, update: m, where: { id: m.id } })),
+  );
 };
 
 export const getPendingMessages = async (
-  _pool?: Pool,
+  client: PrismaClient,
   limit = 100,
-  orderDirection: "ASC" | "DESC" = "ASC",
+  orderDirection: "asc" | "desc" = "asc",
 ): Promise<XMessage[]> => {
   // Get the messages in which `processed` is false
-  const poolToUse = _pool ?? pool;
-  const processed = false;
-
-  const x = await db.sql<s.messages.SQL, s.messages.JSONSelectable[]>`SELECT * FROM ${"messages"} WHERE ${{
-    processed,
-  }} ORDER BY "index" ${raw(`${orderDirection}`)} NULLS LAST LIMIT ${db.param(limit)}`.run(poolToUse);
+  const x = await client.messages.findMany({
+    where: { processed: false },
+    orderBy: { index: orderDirection },
+    take: limit,
+  });
   return x.map(convertFromDbMessage);
 };
 
@@ -235,80 +204,108 @@ export const saveCheckPoint = async (check: string, point: number, _pool?: Pool)
   )}) RETURNING *`.run(poolToUse);
 };
 
-export const getCheckPoint = async (check_name: string, _pool?: Pool): Promise<number> => {
-  const poolToUse = _pool ?? pool;
-  const result = await db.sql<
-    s.checkpoints.SQL,
-    s.checkpoints.JSONSelectable[]
-  >`SELECT * FROM ${"checkpoints"} WHERE ${{
-    check_name,
-  }}`.run(poolToUse);
-  return BigNumber.from(result[0]?.check_point ?? 0).toNumber();
+export const getCheckPoint = async (client: PrismaClient, check_name: string, _pool?: Pool): Promise<number> => {
+  const result = await client.checkpoints.findUnique({ where: { check_name } });
+  return result?.check_point ? result?.check_point.toNumber() : 0;
 };
 
-export const getTransferByTransferId = async (transfer_id: string, _pool?: Pool): Promise<XTransfer | undefined> => {
-  const poolToUse = _pool ?? pool;
-  const x = await db.sql<s.transfers.SQL, s.transfers.JSONSelectable[]>`SELECT * FROM ${"transfers"} WHERE ${{
-    transfer_id,
-  }}`.run(poolToUse);
-  return x.length ? convertFromDbTransfer(x[0]) : undefined;
+export const getTransferByTransferId = async (
+  client: PrismaClient,
+  transfer_id: string,
+): Promise<XTransfer | undefined> => {
+  const x = await client.transfers.findUnique({ where: { transfer_id } });
+  return x ? convertFromDbTransfer(x) : undefined;
 };
 
 export const getTransfersByStatus = async (
+  client: PrismaClient,
   status: XTransferStatus,
   limit: number,
   offset = 0,
-  orderDirection: "ASC" | "DESC" = "ASC",
-  _pool?: Pool,
+  orderDirection: "asc" | "desc" = "asc",
 ): Promise<XTransfer[]> => {
-  const poolToUse = _pool ?? pool;
-  const x = await db.sql<s.transfers.SQL, s.transfers.JSONSelectable[]>`SELECT * FROM ${"transfers"} WHERE ${{
-    status,
-  }} ORDER BY "xcall_timestamp" ${raw(`${orderDirection}`)} NULLS LAST LIMIT ${db.param(limit)} OFFSET ${db.param(
-    offset,
-  )}`.run(poolToUse);
+  const x = await client.transfers.findMany({
+    where: { status },
+    orderBy: { xcall_timestamp: orderDirection },
+    take: limit,
+    skip: offset,
+  });
   return x.map(convertFromDbTransfer);
 };
 
 export const getTransfersWithOriginPending = async (
+  client: PrismaClient,
   domain: string,
   limit: number,
-  orderDirection: "ASC" | "DESC" = "ASC",
-  _pool?: Pool,
+  orderDirection: "asc" | "desc" = "asc",
 ): Promise<string[]> => {
-  const poolToUse = _pool ?? pool;
-  const transfers = await db.sql<s.transfers.SQL, s.transfers.JSONSelectable[]>`SELECT * FROM ${"transfers"} WHERE ${{
-    origin_domain: domain,
-  }} AND "xcall_timestamp" IS NULL ORDER BY "update_time" ${raw(`${orderDirection}`)} LIMIT ${db.param(limit)}`.run(
-    poolToUse,
-  );
+  const transfers = await client.transfers.findMany({
+    where: { origin_domain: domain, xcall_timestamp: null },
+    orderBy: { update_time: orderDirection },
+    take: limit,
+  });
 
   const transfer_ids = transfers.map((transfer) => transfer.transfer_id);
   return transfer_ids;
 };
 
 export const getTransfersWithDestinationPending = async (
+  client: PrismaClient,
   domain: string,
   limit: number,
-  orderDirection: "ASC" | "DESC" = "ASC",
-  _pool?: Pool,
+  orderDirection: "asc" | "desc" = "asc",
 ): Promise<string[]> => {
-  const poolToUse = _pool ?? pool;
-  const transfers = await db.sql<s.transfers.SQL, s.transfers.JSONSelectable[]>`SELECT * FROM ${"transfers"} WHERE (${{
-    destination_domain: domain,
-  }} OR "destination_domain" IS NULL) AND ("xcall_timestamp" IS NOT NULL AND ("execute_timestamp" IS NULL OR "reconcile_timestamp" IS NULL)) ORDER BY "update_time" ${raw(
-    `${orderDirection}`,
-  )} LIMIT ${db.param(limit)}`.run(poolToUse);
+  const transfers = await client.transfers.findMany({
+    where: {
+      destination_domain: domain,
+      xcall_timestamp: { not: null },
+      execute_timestamp: null,
+      reconcile_timestamp: null,
+    },
+    orderBy: { update_time: orderDirection },
+    take: limit,
+    skip: 0,
+  });
 
   const transfer_ids = transfers.map((transfer) => transfer.transfer_id);
   return transfer_ids;
 };
 
-export const saveRouterBalances = async (routerBalances: RouterBalance[], _pool?: Pool): Promise<void> => {
+export const saveRouterBalances = async (client: PrismaClient, routerBalances: RouterBalance[]): Promise<void> => {
   const poolToUse = _pool ?? pool;
-  const routers: s.routers.Insertable[] = routerBalances.map((router) => {
-    return { address: router.router };
+  const routers = routerBalances.map((router) => {
+    const balances = (routerBalances.find((r) => r.router === router.router) ?? {}).assets ?? [];
+    return {
+      address: router.router,
+      balances: balances.map((b) => {
+        return {
+          balance: {
+            asset_canonical_id: b.canonicalId,
+            asset_domain: b.domain,
+            router_address: router.router,
+            balance: b.balance,
+          },
+          asset: {
+            local: b.local,
+            adopted: b.adoptedAsset,
+            canonical_id: b.canonicalId,
+            canonical_domain: b.canonicalDomain,
+            domain: b.domain,
+          },
+        };
+      }),
+    };
   });
+
+  await client.$transaction(
+    routers.map((r) =>
+      client.routers.upsert({
+        create: { address: r.address, asset_balances: r.balances.map((b) => b.balance) },
+        update: r,
+        where: { address: r.address },
+      }),
+    ),
+  );
 
   // TODO: make this a single query! we should be able to do this with postgres
   for (const router of routers) {
@@ -319,14 +316,13 @@ export const saveRouterBalances = async (routerBalances: RouterBalance[], _pool?
     `.run(poolToUse);
 
     const balances = (routerBalances.find((r) => r.router === router.address) ?? {}).assets ?? [];
-    const dbBalances: { balance: s.asset_balances.Insertable; asset: s.assets.Insertable }[] = balances.map((b) => {
+    const dbBalances: { balance: AssetBalances; asset: Asset }[] = balances.map((b) => {
       return {
         balance: {
           asset_canonical_id: b.canonicalId,
           asset_domain: b.domain,
           router_address: router.address,
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-          balance: b.balance as any,
+          balance: b.balance,
         },
         asset: {
           local: b.local,

@@ -1062,6 +1062,12 @@ const _abi = [
         type: "uint256",
       },
       {
+        indexed: true,
+        internalType: "bytes32",
+        name: "messageHash",
+        type: "bytes32",
+      },
+      {
         components: [
           {
             components: [
@@ -2219,6 +2225,12 @@ const _abi = [
         internalType: "bytes32",
         name: "transferId",
         type: "bytes32",
+      },
+      {
+        indexed: false,
+        internalType: "uint32",
+        name: "originDomain",
+        type: "uint32",
       },
       {
         indexed: false,

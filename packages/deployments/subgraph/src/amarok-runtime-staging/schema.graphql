@@ -89,10 +89,13 @@ type OriginTransfer @entity {
   transactingAsset: Bytes
   # Amount of asset sent in.
   transactingAmount: BigInt
-  # Nomad asset being bridged.
+  # asset being bridged.
   bridgedAsset: Bytes
   # Amount of bridged nomad asset.
   bridgedAmount: BigInt
+
+  # Message
+  message: OriginMessage
 
   # XCalled Transaction
   caller: Bytes
@@ -101,12 +104,6 @@ type OriginTransfer @entity {
   gasPrice: BigInt
   gasLimit: BigInt
   blockNumber: BigInt
-
-  # Dispatch Transaction
-  leaf: Bytes
-  index: BigInt
-  root: Bytes
-  message: Bytes
 }
 
 type DestinationTransfer @entity {
@@ -163,9 +160,74 @@ type DestinationTransfer @entity {
   reconciledGasPrice: BigInt
   reconciledGasLimit: BigInt
   reconciledBlockNumber: BigInt
+}
+
+type OriginMessage @entity {
+  id: ID!
+
+  # origin transfer data
+  transferId: Bytes
+  destinationDomain: BigInt
+
+  # Dispatch Transaction
+  leaf: Bytes
+  index: BigInt
+  root: Bytes
+  message: Bytes
+  transactionHash: Bytes
+}
+
+type DestinationMessage @entity {
+  id: ID!
 
   # Process Transaction
   leaf: Bytes
   processed: Boolean
   returnData: Bytes
+  transactionHash: Bytes
+}
+
+type AggregateRoot @entity {
+  id: ID!
+  root: Bytes!
+}
+
+type ConnectorMeta @entity {
+  id: ID! # "ConnectorMeta"
+  spokeDomain: BigInt!
+  hubDomain: BigInt!
+
+  amb: Bytes!
+  rootManager: Bytes!
+  mirrorConnector: Bytes!
+}
+
+type RootMessageSent @entity {
+  id: ID!
+
+  spokeDomain: BigInt
+  hubDomain: BigInt
+  root: Bytes
+
+  # MessageSent Transaction
+  caller: Bytes
+  transactionHash: Bytes
+  timestamp: BigInt
+  gasPrice: BigInt
+  gasLimit: BigInt
+  blockNumber: BigInt
+}
+
+type RootMessageProcessed @entity {
+  id: ID!
+
+  root: Bytes
+
+  # MessageProcessed Transaction
+  caller: Bytes
+  transactionHash: Bytes
+  timestamp: BigInt
+  gasPrice: BigInt
+  gasLimit: BigInt
+  blockNumber: BigInt
 }

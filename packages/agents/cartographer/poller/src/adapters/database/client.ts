@@ -1,4 +1,12 @@
-import { XTransfer, XTransferStatus, RouterBalance, convertFromDbTransfer } from "@connext/nxtp-utils";
+import {
+  XTransfer,
+  XTransferStatus,
+  RouterBalance,
+  convertFromDbTransfer,
+  XMessage,
+  RootMessage,
+  convertFromDbMessage,
+} from "@connext/nxtp-utils";
 import { Pool } from "pg";
 import * as db from "zapatos/db";
 import { raw } from "zapatos/db";
@@ -65,6 +73,49 @@ const convertToDbTransfer = (transfer: XTransfer): s.transfers.Insertable => {
   };
 };
 
+const convertToDbMessage = (message: XMessage): s.messages.Insertable => {
+  return {
+    leaf: message.leaf,
+    origin_domain: message.originDomain,
+    destination_domain: message.destinationDomain,
+    index: message.origin?.index,
+    root: message.origin?.root,
+    message: message.origin?.message,
+    processed: message.destination?.processed,
+    return_data: message.destination?.returnData,
+  };
+};
+
+const convertToDbSentRootMessage = (message: RootMessage): s.sent_root_messages.Insertable => {
+  return {
+    id: message.id,
+    spoke_domain: message.spokeDomain,
+    hub_domain: message.hubDomain,
+    root: message.root,
+    caller: message.caller,
+    transaction_hash: message.transactionHash,
+    sent_timestamp: message.timestamp,
+    gas_price: message.gasPrice,
+    gas_limit: message.gasLimit,
+    block_number: message.blockNumber,
+  };
+};
+
+const convertToDbProcessedRootMessage = (message: RootMessage): s.processed_root_messages.Insertable => {
+  return {
+    id: message.id,
+    spoke_domain: message.spokeDomain,
+    hub_domain: message.hubDomain,
+    root: message.root,
+    caller: message.caller,
+    transaction_hash: message.transactionHash,
+    processed_timestamp: message.timestamp,
+    gas_price: message.gasPrice,
+    gas_limit: message.gasLimit,
+    block_number: message.blockNumber,
+  };
+};
+
 const sanitizeNull = (obj: { [s: string]: any }): any => {
   return Object.fromEntries(Object.entries(obj).filter(([_, v]) => v != null));
 };
@@ -82,6 +133,67 @@ export const saveTransfers = async (xtransfers: XTransfer[], _pool?: Pool): Prom
       transfer,
     )}) RETURNING *`.run(poolToUse);
   }
+};
+
+export const saveMessages = async (xMessages: XMessage[], _pool?: Pool): Promise<void> => {
+  // The `xMessages` are the ones retrieved only from the origin or destination domain
+  const poolToUse = _pool ?? pool;
+  const messages: s.messages.Insertable[] = xMessages.map(convertToDbMessage);
+
+  for (const oneMessage of messages) {
+    const message = sanitizeNull(oneMessage);
+    await db.sql<s.messages.SQL, s.messages.JSONSelectable[]>`INSERT INTO ${"messages"} (${db.cols(message)})
+    VALUES (${db.vals(message)}) ON CONFLICT ("leaf") DO UPDATE SET (${db.cols(message)}) = (${db.vals(
+      message,
+    )}) RETURNING *`.run(poolToUse);
+  }
+};
+
+export const saveSentRootMessages = async (_messages: RootMessage[], _pool?: Pool): Promise<void> => {
+  const poolToUse = _pool ?? pool;
+  const messages: s.sent_root_messages.Insertable[] = _messages.map(convertToDbSentRootMessage);
+
+  for (const oneMessage of messages) {
+    const message = sanitizeNull(oneMessage);
+    await db.sql<
+      s.sent_root_messages.SQL,
+      s.sent_root_messages.JSONSelectable[]
+    >`INSERT INTO ${"sent_root_messages"} (${db.cols(message)})
+    VALUES (${db.vals(message)}) ON CONFLICT ("id") DO UPDATE SET (${db.cols(message)}) = (${db.vals(
+      message,
+    )}) RETURNING *`.run(poolToUse);
+  }
+};
+
+export const saveProcessedRootMessages = async (_messages: RootMessage[], _pool?: Pool): Promise<void> => {
+  const poolToUse = _pool ?? pool;
+  const messages: s.processed_root_messages.Insertable[] = _messages.map(convertToDbProcessedRootMessage);
+
+  for (const oneMessage of messages) {
+    const message = sanitizeNull(oneMessage);
+    await db.sql<
+      s.processed_root_messages.SQL,
+      s.processed_root_messages.JSONSelectable[]
+    >`INSERT INTO ${"processed_root_messages"} (${db.cols(message)})
+    VALUES (${db.vals(message)}) ON CONFLICT ("id") DO UPDATE SET (${db.cols(message)}) = (${db.vals(
+      message,
+    )}) RETURNING *`.run(poolToUse);
+  }
+};
+
+export const getPendingMessages = async (
+  _pool?: Pool,
+  limit = 100,
+  orderDirection: "ASC" | "DESC" = "ASC",
+): Promise<XMessage[]> => {
+  // Get the messages in which `processed` is false
+  const poolToUse = _pool ?? pool;
+  const processed = false;
+
+  const x = await db.sql<s.messages.SQL, s.messages.JSONSelectable[]>`SELECT * FROM ${"messages"} WHERE ${{
+    processed,
+  }} ORDER BY "index" ${raw(`${orderDirection}`)} NULLS LAST LIMIT ${db.param(limit)}`.run(poolToUse);
+  return x.map(convertFromDbMessage);
 };
 
 export const saveCheckPoint = async (check: string, point: number, _pool?: Pool): Promise<void> => {

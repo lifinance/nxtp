@@ -19,7 +19,14 @@ import {
   RouterRecipientSet,
   MaxRoutersPerTransferUpdated,
 } from "../../generated/Connext/ConnextHandler";
-import { Dispatch, Process } from "../../generated/Connector/Connector";
+import {
+  NewConnector,
+  Dispatch,
+  Process,
+  AggregateRootUpdated,
+  MessageSent,
+  MessageProcessed,
+} from "../../generated/Connector/Connector";
 import {
   Asset,
   AssetBalance,
@@ -30,19 +37,32 @@ import {
   OriginTransfer,
   DestinationTransfer,
   Setting,
+  OriginMessage,
+  DestinationMessage,
+  AggregateRoot,
+  RootMessageSent,
+  RootMessageProcessed,
+  ConnectorMeta,
 } from "../../generated/schema";
 
 const DEFAULT_MAX_ROUTERS_PER_TRANSFER = 5;
-export function handleRelayerAdded(event: RelayerAdded): void {
-  let relayerId = event.params.relayer.toHex();
-  let relayer = Relayer.load(relayerId);
 
-  if (relayer == null) {
-    relayer = new Relayer(relayerId);
-    relayer.isActive = true;
-    relayer.relayer = event.params.relayer;
-    relayer.save();
+const DEFAULT_CONNECTOR_META_ID = "CONNECTOR_META_ID";
+
+/// MARK - Assets
+export function handleAssetAdded(event: AssetAdded): void {
+  let assetId = event.params.localAsset.toHex();
+  let asset = Asset.load(assetId);
+  if (asset == null) {
+    asset = new Asset(assetId);
   }
+  asset.key = event.params.key;
+  asset.local = event.params.localAsset;
+  asset.adoptedAsset = event.params.adoptedAsset;
+  asset.canonicalId = event.params.canonicalId;
+  asset.canonicalDomain = event.params.domain;
+  asset.blockNumber = event.block.number;
+  asset.save();
 }
 
 export function handleStableSwapAdded(event: StableSwapAdded): void {
@@ -71,6 +91,19 @@ export function handleSponsorVaultUpdated(event: SponsorVaultUpdated): void {
   }
 }
 
+/// MARK - Relayers
+export function handleRelayerAdded(event: RelayerAdded): void {
+  let relayerId = event.params.relayer.toHex();
+  let relayer = Relayer.load(relayerId);
+
+  if (relayer == null) {
+    relayer = new Relayer(relayerId);
+    relayer.isActive = true;
+    relayer.relayer = event.params.relayer;
+    relayer.save();
+  }
+}
+
 export function handleRelayerRemoved(event: RelayerRemoved): void {
   let relayerId = event.params.relayer.toHex();
   let relayer = Relayer.load(relayerId);
@@ -82,6 +115,7 @@ export function handleRelayerRemoved(event: RelayerRemoved): void {
   }
 }
 
+/// MARK - Routers
 export function handleRouterAdded(event: RouterAdded): void {
   let routerId = event.params.router.toHex();
   let router = Router.load(routerId);
@@ -147,21 +181,6 @@ export function handleRouterOwnerAccepted(event: RouterOwnerAccepted): void {
   router.save();
 }
 
-export function handleAssetAdded(event: AssetAdded): void {
-  let assetId = event.params.localAsset.toHex();
-  let asset = Asset.load(assetId);
-  if (asset == null) {
-    asset = new Asset(assetId);
-  }
-  asset.key = event.params.key;
-  asset.local = event.params.localAsset;
-  asset.adoptedAsset = event.params.adoptedAsset;
-  asset.canonicalId = event.params.canonicalId;
-  asset.canonicalDomain = event.params.domain;
-  asset.blockNumber = event.block.number;
-  asset.save();
-}
-
 /**
  * Updates the subgraph records when LiquidityAdded events are emitted. Will create a Router record if it does not exist
  *
@@ -207,6 +226,7 @@ export function handleMaxRoutersPerTransferUpdated(event: MaxRoutersPerTransferU
   settingEntity.save();
 }
 
+/// MARK - Connext Bridge
 /**
  * Creates subgraph records when TransactionPrepared events are emitted.
  *
@@ -247,6 +267,17 @@ export function handleXCalled(event: XCalled): void {
   transfer.transactingAmount = event.params.xcallArgs.transactingAmount;
   transfer.bridgedAsset = event.params.bridgedAsset;
   transfer.bridgedAmount = event.params.bridgedAmount;
+
+  // Message
+  let message = OriginMessage.load(event.params.messageHash.toHex());
+  if (message == null) {
+    message = new OriginMessage(event.params.messageHash.toHex());
+  }
+  message.leaf = event.params.messageHash;
+  message.destinationDomain = event.params.xcallArgs.params.destinationDomain;
+  message.transferId = event.params.transferId;
+  message.save();
+  transfer.message = message.id;
 
   // XCall Transaction
   transfer.caller = event.params.caller;
@@ -380,7 +411,7 @@ export function handleReconciled(event: Reconciled): void {
   transfer.transferId = event.params.transferId;
 
   // Call Params
-  // transfer.originDomain = event.params.origin;
+  transfer.originDomain = event.params.originDomain;
 
   // Assets
   transfer.localAsset = event.params.asset;
@@ -405,16 +436,104 @@ export function handleReconciled(event: Reconciled): void {
   transfer.save();
 }
 
+/// MARK - Connector
 export function handleDispatch(event: Dispatch): void {
   // Dispatch(bytes32 leaf, uint256 index, bytes32 root, bytes message);
-  // initiate origin transfer: save message, root
+  let message = OriginMessage.load(event.params.leaf.toHexString());
+  if (message == null) {
+    message = new OriginMessage(event.params.leaf.toHexString());
+  }
+
+  message.leaf = event.params.leaf;
+  message.index = event.params.index;
+  message.root = event.params.root;
+  message.message = event.params.message;
+  message.transactionHash = event.transaction.hash;
+
+  message.save();
 }
 
-export function handleProcess(event: Process): void {
-  // Dispatch(bytes32 leaf, uint256 index, bytes32 root, bytes message);
-  // initiate destination transfer: save processed: boolean
+// export function handleProcess(event: Process): void {
+//   let message = DestinationMessage.load(event.params.leaf.toHexString());
+//   if (message == null) {
+//     message = new DestinationMessage(event.params.leaf.toHexString());
+//   }
+
+//   message.leaf = event.params.leaf;
+//   message.processed = event.params.success;
+//   message.returnData = event.params.returnData;
+//   message.transactionHash = event.transaction.hash;
+
+//   message.save();
+// }
+
+export function handleAggregateRootUpdated(event: AggregateRootUpdated): void {
+  let aggregateRoot = AggregateRoot.load(event.params.current.toHexString());
+  if (aggregateRoot == null) {
+    aggregateRoot = new AggregateRoot(event.params.current.toHexString());
+  }
+
+  aggregateRoot.root = event.params.current;
+  aggregateRoot.save();
 }
 
+export function handleMessageSent(event: MessageSent): void {
+  let message = RootMessageSent.load(event.params.data.toHexString());
+  if (message == null) {
+    message = new RootMessageSent(event.params.data.toHexString());
+  }
+
+  let meta = ConnectorMeta.load(DEFAULT_CONNECTOR_META_ID);
+  if (meta == null) {
+    meta = new ConnectorMeta(DEFAULT_CONNECTOR_META_ID);
+  }
+
+  message.spokeDomain = meta.spokeDomain;
+  message.hubDomain = meta.hubDomain;
+
+  message.root = event.params.data;
+  message.caller = event.params.caller;
+  message.transactionHash = event.transaction.hash;
+  message.timestamp = event.block.timestamp;
+  message.gasPrice = event.transaction.gasPrice;
+  message.gasLimit = event.transaction.gasLimit;
+  message.blockNumber = event.block.number;
+  message.save();
+}
+
+export function handleMessageProcessed(event: MessageProcessed): void {
+  let message = RootMessageProcessed.load(event.params.data.toHexString());
+  if (message == null) {
+    message = new RootMessageProcessed(event.params.data.toHexString());
+  }
+
+  message.root = event.params.data;
+  message.caller = event.params.caller;
+  message.transactionHash = event.transaction.hash;
+  message.timestamp = event.block.timestamp;
+  message.gasPrice = event.transaction.gasPrice;
+  message.gasLimit = event.transaction.gasLimit;
+  message.blockNumber = event.block.number;
+  message.save();
+}
+
+export function handleNewConnector(event: NewConnector): void {
+  let meta = ConnectorMeta.load(DEFAULT_CONNECTOR_META_ID);
+  if (meta == null) {
+    meta = new ConnectorMeta(DEFAULT_CONNECTOR_META_ID);
+  }
+
+  meta.spokeDomain = event.params.domain;
+  meta.hubDomain = event.params.mirrorDomain;
+
+  meta.amb = event.params.amb;
+  meta.rootManager = event.params.rootManager;
+  meta.mirrorConnector = event.params.mirrorConnector;
+
+  meta.save();
+}
+
+/// MARK - Helpers
 // eslint-disable-next-line @typescript-eslint/ban-types
 function getChainId(): BigInt {
   // try to get chainId from the mapping

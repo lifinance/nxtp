@@ -1,5 +1,6 @@
 import { BigNumber, constants } from "ethers";
 
+import { XMessage, RootMessage } from "./amb";
 import { AssetBalance, RouterBalance, XTransfer, XTransferStatus } from "./xtransfers";
 
 /**
@@ -154,4 +155,47 @@ export const convertToRouterBalance = (routerBalanceRows: any[]): RouterBalance[
   });
 
   return routerBalances;
+};
+
+/**
+ * Converts a message from the cartographer db through either DB queries or Postgrest into the XMessage type
+ * @param message - the message from the cartographer db as a JSON object
+ * @returns an XMessage object
+ */
+export const convertFromDbMessage = (message: any): XMessage => {
+  return {
+    leaf: message.leaf,
+    originDomain: message.origin_domain,
+    destinationDomain: message.destination_domain,
+    transferId: message.transferId,
+    origin: {
+      index: BigNumber.from(message.index).toNumber(),
+      root: message.root,
+      message: message.message,
+    },
+    destination: {
+      processed: message.processed || false,
+      returnData: message.return_data,
+    },
+  };
+};
+
+/**
+ * Converts a root message from the cartographer db through either DB queries or Postgrest into the RootMessage type
+ * @param message - the message from the cartographer db as a JSON object
+ * @returns an RootMessage object
+ */
+export const convertFromDbRootMessage = (message: any): RootMessage => {
+  return {
+    id: message.id,
+    spokeDomain: message.spoke_domain,
+    hubDomain: message.hub_domain,
+    root: message.root,
+    caller: message.caller,
+    transactionHash: message.transaction_hash,
+    timestamp: message.sent_timestamp,
+    gasPrice: message.gas_price,
+    gasLimit: message.gas_limit,
+    blockNumber: message.block_number,
+  };
 };

@@ -1,7 +1,16 @@
 import { createStubInstance, SinonStub, stub, restore, reset } from "sinon";
-import { expect, mock, chainDataToMap, Logger, OriginTransfer } from "@connext/nxtp-utils";
-import * as transfersPoller from "../../../src/transfersPoller";
-import * as routersPoller from "../../../src/routersPoller";
+import {
+  expect,
+  mock,
+  chainDataToMap,
+  Logger,
+  OriginTransfer,
+  DestinationTransfer,
+  XTransferStatus,
+} from "@connext/nxtp-utils";
+import * as transfersPoller from "../../../src/pollers/transfersPoller";
+import * as routersPoller from "../../../src/pollers/routersPoller";
+import * as messagesPoller from "../../../src/pollers/messagePoller";
 import { bindTransfers } from "../../../src/bindings/transfers";
 import { bindRouters } from "../../../src/bindings/routers";
 
@@ -11,7 +20,22 @@ import { SubgraphReader } from "@connext/nxtp-adapters-subgraph";
 import { AppContext } from "../../../src/shared";
 import * as shared from "../../../src/shared";
 
-const mockSubgraphResponse = [mock.entity.xtransfer() as OriginTransfer, mock.entity.xtransfer() as OriginTransfer];
+const mockOriginSubgraphResponse = [
+  mock.entity.xtransfer({ originDomain: "1337", destinationDomain: "1338" }) as OriginTransfer,
+  mock.entity.xtransfer({ originDomain: "1337", destinationDomain: "1338" }) as OriginTransfer,
+];
+const mockDestinationSubgraphResponse = [
+  mock.entity.xtransfer({
+    originDomain: "1337",
+    destinationDomain: "1338",
+    status: XTransferStatus.Reconciled,
+  }) as DestinationTransfer,
+  mock.entity.xtransfer({
+    originDomain: "1337",
+    destinationDomain: "1338",
+    status: XTransferStatus.Reconciled,
+  }) as DestinationTransfer,
+];
 const mockRouterResponse = [{}, {}];
 
 const mockConfig: CartographerConfig = {
@@ -93,9 +117,9 @@ describe("Backend operations", () => {
     const saveTransfersStub = stub(dbClient, "saveTransfers");
     saveTransfersStub.resolves();
     const getTransfersByStatusStub = stub(dbClient, "getTransfersByStatus");
-    getTransfersByStatusStub.onFirstCall().resolves(mockSubgraphResponse);
-    getTransfersByStatusStub.onSecondCall().resolves(mockSubgraphResponse);
-    getTransfersByStatusStub.onThirdCall().resolves(mockSubgraphResponse);
+    getTransfersByStatusStub.onFirstCall().resolves(mockOriginSubgraphResponse);
+    getTransfersByStatusStub.onSecondCall().resolves(mockOriginSubgraphResponse);
+    getTransfersByStatusStub.onThirdCall().resolves(mockOriginSubgraphResponse);
     const saveRouterBalancesStub = stub(dbClient, "saveRouterBalances");
     saveRouterBalancesStub.resolves();
     const getCheckPointStub = stub(dbClient, "getCheckPoint");
@@ -106,6 +130,10 @@ describe("Backend operations", () => {
     getTransfersWithOriginPendingStub.resolves([]);
     const getTransfersWithDestinationPendingStub = stub(dbClient, "getTransfersWithDestinationPending");
     getTransfersWithDestinationPendingStub.resolves([]);
+    const saveMessages = stub(dbClient, "saveMessages");
+    saveMessages.resolves();
+    const getPendingMessagesStub = stub(dbClient, "getPendingMessages");
+    getPendingMessagesStub.resolves([]);
 
     mockContext = {
       logger: new Logger({
@@ -114,11 +142,11 @@ describe("Backend operations", () => {
       }),
       adapters: {
         subgraph: createStubInstance(SubgraphReader, {
-          getOriginTransfersByNonce: Promise.resolve(mockSubgraphResponse),
-          getDestinationTransfersByNonce: Promise.resolve(mockSubgraphResponse),
-          getDestinationTransfersByDomainAndReconcileTimestamp: Promise.resolve(mockSubgraphResponse),
-          getOriginTransfersById: Promise.resolve(mockSubgraphResponse),
-          getDestinationTransfersById: Promise.resolve(mockSubgraphResponse),
+          getOriginTransfersByNonce: Promise.resolve(mockOriginSubgraphResponse),
+          getDestinationTransfersByNonce: Promise.resolve(mockDestinationSubgraphResponse),
+          getDestinationTransfersByDomainAndReconcileTimestamp: Promise.resolve(mockDestinationSubgraphResponse),
+          getOriginTransfersById: Promise.resolve(mockOriginSubgraphResponse),
+          getDestinationTransfersById: Promise.resolve(mockDestinationSubgraphResponse),
           getAssetBalancesRouters: Promise.resolve(mockRouterResponse),
         }),
         database: {
@@ -143,14 +171,6 @@ describe("Backend operations", () => {
   afterEach(() => {
     restore();
     reset();
-  });
-
-  it("should poll subgraph with block zero", async () => {
-    await expect(bindTransfers()).to.eventually.not.be.rejected;
-  });
-
-  it("should poll subgraph with mock non zero block", async () => {
-    await expect(bindTransfers()).to.eventually.not.be.rejected;
   });
 
   it("should poll subgraph with mock backend", async () => {

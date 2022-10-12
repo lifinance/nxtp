@@ -42,7 +42,7 @@ abstract contract SpokeConnector is Connector, ConnectorManager, WatcherClient, 
 
   event AggregateRootRemoved(bytes32 root);
 
-  event Dispatch(bytes32 leaf, uint256 index, bytes32 root, bytes message);
+  event Dispatch(bytes32 leaf, uint32 index, bytes32 root, bytes message);
 
   event Process(bytes32 leaf, bool success, bytes returnData);
 
@@ -67,7 +67,7 @@ abstract contract SpokeConnector is Connector, ConnectorManager, WatcherClient, 
   struct Proof {
     bytes message;
     bytes32[32] path;
-    uint256 index;
+    uint32 index;
   }
 
   // ============ Public Storage ============
@@ -292,7 +292,7 @@ abstract contract SpokeConnector is Connector, ConnectorManager, WatcherClient, 
     bytes32 _messageHash = keccak256(_message);
     // TODO: `insert` function here calculates the root after insertion. Is calculating
     // the root necessary on dispatch, since we only need the roots transmitted xchain?
-    (bytes32 _root, uint256 _count) = MERKLE.insert(_messageHash);
+    (bytes32 _root, uint32 _count) = MERKLE.insert(_messageHash);
 
     // Emit Dispatch event with message information.
     // NOTE: Current leaf index is count - 1 since new leaf has already been inserted.
@@ -330,7 +330,7 @@ abstract contract SpokeConnector is Connector, ConnectorManager, WatcherClient, 
     Proof[] calldata _proofs,
     bytes32 _aggregateRoot,
     bytes32[32] calldata _aggregatePath,
-    uint256 _aggregateIndex
+    uint32 _aggregateIndex
   ) external whenNotPaused {
     // Sanity check: proofs are included.
     require(_proofs.length > 0, "!proofs");
@@ -429,7 +429,7 @@ abstract contract SpokeConnector is Connector, ConnectorManager, WatcherClient, 
   function calculateMessageRoot(
     bytes32 _messageHash,
     bytes32[32] calldata _messagePath,
-    uint256 _messageIndex
+    uint32 _messageIndex
   ) internal view returns (bytes32) {
     // Ensure that the given message has not already been proven and processed.
     require(messages[_messageHash] == MessageStatus.None, "!MessageStatus.None");
@@ -452,7 +452,7 @@ abstract contract SpokeConnector is Connector, ConnectorManager, WatcherClient, 
     bytes32 _messageRoot,
     bytes32 _aggregateRoot,
     bytes32[32] calldata _aggregatePath,
-    uint256 _aggregateIndex
+    uint32 _aggregateIndex
   ) internal {
     // 0. Check to see if the root for this batch has already been proven.
     if (provenMessageRoots[_messageRoot]) {

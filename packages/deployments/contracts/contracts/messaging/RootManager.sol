@@ -25,9 +25,9 @@ contract RootManager is ProposedOwnable, IRootManager, WatcherClient, DomainInde
 
   event DelayBlocksUpdated(uint256 previous, uint256 updated);
 
-  event RootAggregated(uint32 domain, bytes32 receivedRoot, uint256 index);
+  event RootAggregated(uint32 domain, bytes32 receivedRoot);
 
-  event RootPropagated(bytes32 aggregate, uint32[] domains, uint256 count);
+  event RootPropagated(bytes32 aggregate, uint32[] domains, uint32 count);
 
   event ConnectorAdded(uint32 domain, address connector, uint32[] domains, address[] connectors);
 
@@ -160,7 +160,7 @@ contract RootManager is ProposedOwnable, IRootManager, WatcherClient, DomainInde
 
     // Insert the leaves into the aggregator tree (method will also calculate and return the current
     // aggregate root and count).
-    (bytes32 _aggregateRoot, uint256 _count) = MERKLE.insert(_verifiedInboundRoots);
+    (bytes32 _aggregateRoot, uint32 _count) = MERKLE.insert(_verifiedInboundRoots);
 
     for (uint32 i; i < _numDomains; ) {
       IHubConnector(_connectors[i]).sendMessage(abi.encodePacked(_aggregateRoot));
@@ -183,7 +183,7 @@ contract RootManager is ProposedOwnable, IRootManager, WatcherClient, DomainInde
    * @param _inbound The inbound root coming from the given domain.
    */
   function aggregate(uint32 _domain, bytes32 _inbound) external whenNotPaused onlyConnector(_domain) {
-    uint128 lastIndex = pendingInboundRoots.enqueue(_inbound);
-    emit RootAggregated(_domain, _inbound, lastIndex);
+    pendingInboundRoots.enqueue(_inbound);
+    emit RootAggregated(_domain, _inbound);
   }
 }

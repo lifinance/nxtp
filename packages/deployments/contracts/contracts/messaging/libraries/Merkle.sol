@@ -22,7 +22,10 @@ library MerkleLib {
    **/
   struct Tree {
     bytes32[TREE_DEPTH] branch;
-    uint256 count;
+    // NOTE: Count is a uint32 specifically because TREE_DEPTH is 32, and MAX_LEAVES is
+    // (2**32 - 1)! Since indices are used for navigating the tree, we use uint32 to cap the size
+    // of index arguments.
+    uint32 count;
   }
 
   // ========= In-Memory Methods =========
@@ -35,7 +38,7 @@ library MerkleLib {
    * @return Tree Updated tree.
    **/
   // function insert(Tree memory tree, bytes32 node) internal pure returns (Tree memory) {
-  //   uint256 size = tree.count + 1; // Add 1 since we'll be including a new node.
+  //   uint32 size = tree.count + 1; // Add 1 since we'll be including a new node.
   //   if (size >= MAX_LEAVES) revert MerkleLib__insert_treeIsFull();
 
   //   // Update tree.count to increase the current count by 1.
@@ -44,7 +47,7 @@ library MerkleLib {
   //   // Loop starting at 0, ending when we've finished inserting the node (i.e. hashing it) into
   //   // the active branch. Each loop we cut size in half, hashing the inserted node up the active
   //   // branch along the way.
-  //   for (uint256 i; i < TREE_DEPTH; ) {
+  //   for (uint8 i; i < TREE_DEPTH; ) {
   //     // Check if the current size is odd; if so, we set this index in the branch to be the node.
   //     if ((size & 1) == 1) {
   //       // If i > 0, then this node will be a hash of the original node with every layer up
@@ -71,10 +74,10 @@ library MerkleLib {
    * @notice Inserts a given node (leaf) into merkle tree.
    * @dev Reverts if the tree is already full.
    * @param node Element to insert into tree.
-   * @return uint256 Updated count (number of nodes in the tree).
+   * @return uint32 Updated count (number of nodes in the tree).
    **/
-  function insert(Tree storage tree, bytes32 node) internal returns (uint256) {
-    uint256 size = tree.count + 1; // Add 1 since we'll be including a new node.
+  function insert(Tree storage tree, bytes32 node) internal returns (uint32) {
+    uint32 size = tree.count + 1; // Add 1 since we'll be including a new node.
     if (size >= MAX_LEAVES) revert MerkleLib__insert_treeIsFull();
 
     // Update tree.count to increase the current count by 1.
@@ -83,7 +86,7 @@ library MerkleLib {
     // Loop starting at 0, ending when we've finished inserting the node (i.e. hashing it) into
     // the active branch. Each loop we cut size in half, hashing the inserted node up the active
     // branch along the way.
-    for (uint256 i; i < TREE_DEPTH; ) {
+    for (uint8 i; i < TREE_DEPTH; ) {
       // Check if the current size is odd; if so, we set this index in the branch to be the node.
       if ((size & 1) == 1) {
         // If i > 0, then this node will be a hash of the original node with every layer up
@@ -120,11 +123,11 @@ library MerkleLib {
    * @return _current Calculated root of tree.
    **/
   function rootWithCtx(Tree storage tree, bytes32[TREE_DEPTH] memory _zeroes) internal view returns (bytes32 _current) {
-    uint256 _index = tree.count;
+    uint32 _index = tree.count;
 
     // TODO: Optimization: skip the first N loops where the ith bits are all 0 - start at that
     // depth with zero hashes.
-    for (uint256 i; i < TREE_DEPTH; ) {
+    for (uint8 i; i < TREE_DEPTH; ) {
       uint256 _ithBit = (_index >> i) & 0x01;
       if (_ithBit == 1) {
         _current = keccak256(abi.encodePacked(tree.branch[i], _current));
@@ -149,11 +152,11 @@ library MerkleLib {
   function branchRoot(
     bytes32 _item,
     bytes32[TREE_DEPTH] memory _branch,
-    uint256 _index
+    uint32 _index
   ) internal pure returns (bytes32 _current) {
     _current = _item;
 
-    for (uint256 i; i < TREE_DEPTH; ) {
+    for (uint8 i; i < TREE_DEPTH; ) {
       uint256 _ithBit = (_index >> i) & 0x01;
       bytes32 _next = _branch[i];
       if (_ithBit == 1) {

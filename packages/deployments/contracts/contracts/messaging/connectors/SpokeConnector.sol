@@ -342,9 +342,13 @@ abstract contract SpokeConnector is Connector, ConnectorManager, WatcherClient, 
     // it's included in the aggregator tree. We can use this as a reference for every calculation
     // below to minimize storage access calls.
     bytes32 _messageHash = keccak256(_proofs[0].message);
+    // bytes32 _messageHash = bytes32(0xc1cd1b9ba9310c64a39b4e9b9cf5228b5357633c9c28ab7fdbec4d4b7c74d959);
+    console.log("leaf");
+    console.logBytes32(_messageHash);
     // TODO: Could use an array of sharedRoots so you can submit a message batch of messages with
     // different origins.
     bytes32 _messageRoot = calculateMessageRoot(_messageHash, _proofs[0].path, _proofs[0].index);
+    // bytes32 _messageRoot = bytes32(0x003e20361347289ed4d3d4b132dea38fd618cf2b10a6d45f5163494f4dc9f77e);
 
     // Handle proving this message root is included in the target aggregate root.
     proveMessageRoot(_messageRoot, _aggregateRoot, _aggregatePath, _aggregateIndex);

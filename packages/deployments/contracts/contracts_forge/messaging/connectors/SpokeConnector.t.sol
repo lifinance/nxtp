@@ -140,7 +140,7 @@ contract SpokeConnectorTest is ForgeHelper {
       bytes32(0x93237c50ba75ee485f4c22adf2f741400bdf8d6a9cc7df7ecae576221665d735),
       bytes32(0x8448818bb4ae4562849e949e17ac16e0be16688e156b5cf15e098c627c0056a9)
     ];
-    uint256 index = 1;
+    uint256 index = 0;
     bytes32 aggregateRoot = bytes32(0xe0ec2650f545cbb07fc4cab6aab80bbd5f52683047b6d069711088d8ee8c5294);
     uint256 aggregateIndex = 0;
 

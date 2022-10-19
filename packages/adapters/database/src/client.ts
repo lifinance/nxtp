@@ -143,11 +143,13 @@ export const saveTransfers = async (
     poolToUse,
   );
 
-  transfers = transfers.map((transfer) => {
-    const dbTransfer = dbTransfers.find((dbTransfer) => dbTransfer.transfer_id === transfer.transfer_id);
-    if (transfer.status === undefined) {
-      transfer.status = dbTransfer?.status ? dbTransfer.status : XTransferStatus.XCalled;
+  transfers = transfers.map((_transfer) => {
+    const dbTransfer = dbTransfers.find((dbTransfer) => dbTransfer.transfer_id === _transfer.transfer_id);
+    if (_transfer.status === undefined) {
+      _transfer.status = dbTransfer?.status ? dbTransfer.status : XTransferStatus.XCalled;
     }
+
+    const transfer: any = { ...dbTransfer, ..._transfer };
     return transfer;
   });
 
@@ -219,8 +221,8 @@ export const saveAggregatedRoots = async (
   const poolToUse = _pool ?? pool;
   const roots: s.aggregated_roots.Insertable[] = _roots.map((r) => convertToDbAggregatedRoot(r)).map(sanitizeNull);
 
-  // use upsert here. if the root exists, we don't want to overwrite anything
-  await db.upsert("aggregated_roots", roots, ["id"], { updateColumns: [] }).run(poolToUse);
+  // If the root exists, we don't want to overwrite anything
+  await db.upsert("aggregated_roots", roots, ["domain", "domain_index"], { updateColumns: [] }).run(poolToUse);
 };
 
 export const savePropagatedRoots = async (
@@ -511,11 +513,8 @@ export const getHubNode = async (
   _pool?: Pool | db.TxnClientForRepeatableRead,
 ): Promise<string | undefined> => {
   const poolToUse = _pool ?? pool;
-  // Account for off by one nature of the index value emitted by contract
-  // This just tracks the position in the queue but not the actual index in the tree
-  // Off by one at best, can off by 1 + N, where N -> # of roots removed so far during verification
   const root = await db
-    .selectOne("aggregated_roots", { domain_index: dc.and(dc.eq(index + 1), dc.lte(count)) })
+    .selectOne("aggregated_roots", { domain_index: dc.and(dc.eq(index), dc.lt(count)) })
     .run(poolToUse);
   return root ? convertFromDbAggregatedRoot(root).receivedRoot : undefined;
 };
@@ -530,7 +529,7 @@ export const getHubNodes = async (
   const roots = await db
     .select(
       "aggregated_roots",
-      { domain_index: dc.and(dc.gte(start + 1), dc.lte(end + 1), dc.lte(count)) },
+      { domain_index: dc.and(dc.gte(start), dc.lte(end), dc.lt(count)) },
       { order: { by: "domain_index", direction: "ASC" } },
     )
     .run(poolToUse);

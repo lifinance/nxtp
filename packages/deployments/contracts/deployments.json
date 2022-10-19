@@ -1126,7 +1126,7 @@
           ]
         },
         "BridgeFacetStaging": {
-          "address": "0x38e98a995f9ad8Cf27961aB26Cdda29472C912bC",
+          "address": "0xE4A38c6A231A7e299fee98Bf57B264E53d7160eD",
           "abi": [
             {
               "inputs": [],
@@ -7308,7 +7308,7 @@
           ]
         },
         "ConnextStaging": {
-          "address": "0x9590e2bB6a93e2a531b0269eE7396cECc3E5d6eA",
+          "address": "0x4cF721d0e2907a2f175C793Fc49A94A5F5bB2838",
           "abi": [
             {
               "inputs": [
@@ -9903,22 +9903,6 @@
             },
             {
               "inputs": [],
-              "name": "RelayerFacet__initiateClaim_emptyClaim",
-              "type": "error"
-            },
-            {
-              "inputs": [
-                {
-                  "internalType": "bytes32",
-                  "name": "transferId",
-                  "type": "bytes32"
-                }
-              ],
-              "name": "RelayerFacet__initiateClaim_notRelayer",
-              "type": "error"
-            },
-            {
-              "inputs": [],
               "name": "RelayerFacet__removeRelayer_notApproved",
               "type": "error"
             },
@@ -9926,62 +9910,6 @@
               "inputs": [],
               "name": "RelayerFacet__setRelayerFeeVault_invalidRelayerFeeVault",
               "type": "error"
-            },
-            {
-              "anonymous": false,
-              "inputs": [
-                {
-                  "indexed": true,
-                  "internalType": "address",
-                  "name": "recipient",
-                  "type": "address"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "uint256",
-                  "name": "total",
-                  "type": "uint256"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "bytes32[]",
-                  "name": "transferIds",
-                  "type": "bytes32[]"
-                }
-              ],
-              "name": "Claimed",
-              "type": "event"
-            },
-            {
-              "anonymous": false,
-              "inputs": [
-                {
-                  "indexed": true,
-                  "internalType": "uint32",
-                  "name": "domain",
-                  "type": "uint32"
-                },
-                {
-                  "indexed": true,
-                  "internalType": "address",
-                  "name": "recipient",
-                  "type": "address"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "address",
-                  "name": "caller",
-                  "type": "address"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "bytes32[]",
-                  "name": "transferIds",
-                  "type": "bytes32[]"
-                }
-              ],
-              "name": "InitiatedClaim",
-              "type": "event"
             },
             {
               "anonymous": false,
@@ -12369,7 +12297,7 @@
           ]
         },
         "ConnextStaging_DiamondProxy": {
-          "address": "0x9590e2bB6a93e2a531b0269eE7396cECc3E5d6eA",
+          "address": "0x4cF721d0e2907a2f175C793Fc49A94A5F5bB2838",
           "abi": [
             {
               "inputs": [
@@ -14964,22 +14892,6 @@
             },
             {
               "inputs": [],
-              "name": "RelayerFacet__initiateClaim_emptyClaim",
-              "type": "error"
-            },
-            {
-              "inputs": [
-                {
-                  "internalType": "bytes32",
-                  "name": "transferId",
-                  "type": "bytes32"
-                }
-              ],
-              "name": "RelayerFacet__initiateClaim_notRelayer",
-              "type": "error"
-            },
-            {
-              "inputs": [],
               "name": "RelayerFacet__removeRelayer_notApproved",
               "type": "error"
             },
@@ -14987,62 +14899,6 @@
               "inputs": [],
               "name": "RelayerFacet__setRelayerFeeVault_invalidRelayerFeeVault",
               "type": "error"
-            },
-            {
-              "anonymous": false,
-              "inputs": [
-                {
-                  "indexed": true,
-                  "internalType": "address",
-                  "name": "recipient",
-                  "type": "address"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "uint256",
-                  "name": "total",
-                  "type": "uint256"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "bytes32[]",
-                  "name": "transferIds",
-                  "type": "bytes32[]"
-                }
-              ],
-              "name": "Claimed",
-              "type": "event"
-            },
-            {
-              "anonymous": false,
-              "inputs": [
-                {
-                  "indexed": true,
-                  "internalType": "uint32",
-                  "name": "domain",
-                  "type": "uint32"
-                },
-                {
-                  "indexed": true,
-                  "internalType": "address",
-                  "name": "recipient",
-                  "type": "address"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "address",
-                  "name": "caller",
-                  "type": "address"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "bytes32[]",
-                  "name": "transferIds",
-                  "type": "bytes32[]"
-                }
-              ],
-              "name": "InitiatedClaim",
-              "type": "event"
             },
             {
               "anonymous": false,
@@ -23097,7 +22953,7 @@
           ]
         },
         "DiamondInit": {
-          "address": "0xb0C16E72d5934B8a92FFcA17678676430B6a2402",
+          "address": "0x7e2b4Ba646cc16b21996f4A41E952c0F56e2f3ac",
           "abi": [
             {
               "inputs": [],
@@ -23368,7 +23224,7 @@
           ]
         },
         "InboxFacetStaging": {
-          "address": "0x59d820a582598527B9b56F95B164A1EfeE4a7834",
+          "address": "0x61B16F1c887d2f11BdE8c1015D5b1140e0D4cEDe",
           "abi": [
             {
               "inputs": [],
@@ -25285,7 +25141,7 @@
           ]
         },
         "MainnetSpokeConnectorSendOutboundRootResolverStaging": {
-          "address": "0x17a1E1470232D4f97E4BA3d25FE1b9B8e1eE7D0b",
+          "address": "0x715fFd1a2A7ddd7587cE5Bb859d79b4D26439760",
           "abi": [
             {
               "inputs": [
@@ -25560,7 +25416,7 @@
           ]
         },
         "MainnetSpokeConnectorStaging": {
-          "address": "0xC72b5eDEd73fdc46580e0Ac3ffC0d044586B5032",
+          "address": "0x86843aAdFd8D464A1292Fd2D624439A8B60513d8",
           "abi": [
             {
               "inputs": [
@@ -26938,7 +26794,7 @@
           ]
         },
         "MerkleTreeManagerRootStaging": {
-          "address": "0x2B52297BdDEE58D2657EA8aEb7AbDa20542724BE",
+          "address": "0x4bc70Fa226Ba8E22c011c364a2d38773e045b18e",
           "abi": [
             {
               "inputs": [],
@@ -27347,7 +27203,7 @@
           ]
         },
         "MerkleTreeManagerRootUpgradeBeaconProxyStaging": {
-          "address": "0xFA77Ee891ECeE985554C0eb2823c01A21fB12C70",
+          "address": "0x223202126ce50556Afd127a5ADfc5a32554B867F",
           "abi": [
             {
               "inputs": [
@@ -27376,7 +27232,7 @@
           ]
         },
         "MerkleTreeManagerRootUpgradeBeaconStaging": {
-          "address": "0x8a519BA96D5168DdEd31BdA3308055585D2Aa930",
+          "address": "0x1f24074FaA1D8c67Cc29274070BF65c9082E4Bdf",
           "abi": [
             {
               "inputs": [
@@ -27756,7 +27612,7 @@
           ]
         },
         "MerkleTreeManagerSpokeStaging": {
-          "address": "0xEbe1Fe4cAe062Ea9B2C799B1D7964d1F4D62B491",
+          "address": "0x2D9694CCDb44BEf9D206683f7808c73676f44905",
           "abi": [
             {
               "inputs": [],
@@ -28165,7 +28021,7 @@
           ]
         },
         "MerkleTreeManagerSpokeUpgradeBeaconProxyStaging": {
-          "address": "0xD4565C589A4B32C91C6D783C85Ff57CE3842c7F4",
+          "address": "0xAEe72D929574a9C6aeE8ef26e53cdF1Be81c60Dc",
           "abi": [
             {
               "inputs": [
@@ -28194,7 +28050,7 @@
           ]
         },
         "MerkleTreeManagerSpokeUpgradeBeaconStaging": {
-          "address": "0x1a62E3EC7a2f3385F709C18C19cd7f9d829471de",
+          "address": "0x1B36d329ca48e593CAf5C7722E718dbDd1C6c399",
           "abi": [
             {
               "inputs": [
@@ -28273,7 +28129,7 @@
           ]
         },
         "MulticallStaging": {
-          "address": "0xeB23B7B05e01273ed50eB1AE8a60eCB6214dC7D1",
+          "address": "0xd71471c42e57dDEb17892eA68Ce42E3d0542dB94",
           "abi": [
             {
               "inputs": [
@@ -29192,7 +29048,7 @@
           ]
         },
         "OptimismHubConnectorSendOutboundRootResolverStaging": {
-          "address": "0x36D6130D4958C4Ba18797B1E97b6De424e04cE5F",
+          "address": "0xdC23d7eD19E783AfBced81B22e9656Bc5cA41292",
           "abi": [
             {
               "inputs": [
@@ -29467,7 +29323,7 @@
           ]
         },
         "OptimismHubConnectorStaging": {
-          "address": "0xa065A22E24A43B65f4CfC9A31e635E779780abEE",
+          "address": "0x7D9c146cEdEb97d9161b0f2E4E73255E78dc10cd",
           "abi": [
             {
               "inputs": [
@@ -30914,7 +30770,7 @@
           ]
         },
         "PolygonHubConnectorSendOutboundRootResolverStaging": {
-          "address": "0xDB3172CCbD04aA38Fae6A7aF43D5097FBD5EED9a",
+          "address": "0x73d49ab0e1fa3FA7FddFDED475D5ac1A7e500691",
           "abi": [
             {
               "inputs": [
@@ -31189,7 +31045,7 @@
           ]
         },
         "PolygonHubConnectorStaging": {
-          "address": "0x2f8810c6af135d37D426846c44825FCCA5Ce04f2",
+          "address": "0x2C8fD8cffB7Dba15a0e1d40e1CE452eb9c6Da433",
           "abi": [
             {
               "inputs": [
@@ -32319,7 +32175,7 @@
           ]
         },
         "ProposedOwnableFacetStaging": {
-          "address": "0x43ca0143564695fA3de521CDcc0011B54E9fEE25",
+          "address": "0xD6714b69C3edB18FA6e43A17D21bb227E6798745",
           "abi": [
             {
               "inputs": [],
@@ -33156,7 +33012,7 @@
           ]
         },
         "RelayerFacetStaging": {
-          "address": "0xDbD6578B0Aa69399647023007cb9D738c62de368",
+          "address": "0xaFfD28777f5e27796b7CB4f607F012579a9EE842",
           "abi": [
             {
               "inputs": [],
@@ -33215,22 +33071,6 @@
             },
             {
               "inputs": [],
-              "name": "RelayerFacet__initiateClaim_emptyClaim",
-              "type": "error"
-            },
-            {
-              "inputs": [
-                {
-                  "internalType": "bytes32",
-                  "name": "transferId",
-                  "type": "bytes32"
-                }
-              ],
-              "name": "RelayerFacet__initiateClaim_notRelayer",
-              "type": "error"
-            },
-            {
-              "inputs": [],
               "name": "RelayerFacet__removeRelayer_notApproved",
               "type": "error"
             },
@@ -33238,62 +33078,6 @@
               "inputs": [],
               "name": "RelayerFacet__setRelayerFeeVault_invalidRelayerFeeVault",
               "type": "error"
-            },
-            {
-              "anonymous": false,
-              "inputs": [
-                {
-                  "indexed": true,
-                  "internalType": "address",
-                  "name": "recipient",
-                  "type": "address"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "uint256",
-                  "name": "total",
-                  "type": "uint256"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "bytes32[]",
-                  "name": "transferIds",
-                  "type": "bytes32[]"
-                }
-              ],
-              "name": "Claimed",
-              "type": "event"
-            },
-            {
-              "anonymous": false,
-              "inputs": [
-                {
-                  "indexed": true,
-                  "internalType": "uint32",
-                  "name": "domain",
-                  "type": "uint32"
-                },
-                {
-                  "indexed": true,
-                  "internalType": "address",
-                  "name": "recipient",
-                  "type": "address"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "address",
-                  "name": "caller",
-                  "type": "address"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "bytes32[]",
-                  "name": "transferIds",
-                  "type": "bytes32[]"
-                }
-              ],
-              "name": "InitiatedClaim",
-              "type": "event"
             },
             {
               "anonymous": false,
@@ -34114,7 +33898,7 @@
           ]
         },
         "RootManagerStaging": {
-          "address": "0x7093B76192a3EB62e7fEEA50Cbb1Adde82922590",
+          "address": "0xD864761B8480F57E78060485f442A9A51f1DA0d1",
           "abi": [
             {
               "inputs": [
@@ -34327,7 +34111,7 @@
                 {
                   "indexed": false,
                   "internalType": "uint256",
-                  "name": "index",
+                  "name": "queueIndex",
                   "type": "uint256"
                 }
               ],
@@ -34340,8 +34124,14 @@
                 {
                   "indexed": false,
                   "internalType": "bytes32",
-                  "name": "aggregate",
+                  "name": "aggregateRoot",
                   "type": "bytes32"
+                },
+                {
+                  "indexed": false,
+                  "internalType": "uint256",
+                  "name": "count",
+                  "type": "uint256"
                 },
                 {
                   "indexed": false,
@@ -34351,9 +34141,9 @@
                 },
                 {
                   "indexed": false,
-                  "internalType": "uint256",
-                  "name": "count",
-                  "type": "uint256"
+                  "internalType": "bytes32[]",
+                  "name": "aggregatedMessageRoots",
+                  "type": "bytes32[]"
                 }
               ],
               "name": "RootPropagated",
@@ -35666,7 +35456,7 @@
           ]
         },
         "RoutersFacetStaging": {
-          "address": "0x2f3daA247F7E969E977dddBB4cFf9920Daea8e32",
+          "address": "0x157F14f906985CcbCF4c6fCd689147642c7a1766",
           "abi": [
             {
               "inputs": [],
@@ -38399,7 +38189,7 @@
           ]
         },
         "StableSwapFacetStaging": {
-          "address": "0xE829B5efBef4414287B78675EA274D5A1944ab59",
+          "address": "0xfcc0287c35B11f785c8caF22b5e2535480f9639C",
           "abi": [
             {
               "inputs": [],
@@ -39116,7 +38906,7 @@
           ]
         },
         "StableSwapStaging": {
-          "address": "0x77C8D59fFac8387cf412dAF0736E0bb204cc6993",
+          "address": "0x99DbC97509DA7689ebcdDC244c4A76FAEfEce3Cc",
           "abi": [
             {
               "anonymous": false,
@@ -40711,7 +40501,7 @@
           ]
         },
         "SwapAdminFacetStaging": {
-          "address": "0x6fcfEdF770E42CDe83c52B39920D1dF7ee56BF01",
+          "address": "0xb3b451B373Bb8c86d8482cA405309e1349148462",
           "abi": [
             {
               "inputs": [],
@@ -41537,7 +41327,7 @@
           ]
         },
         "SwapUtilsExternalStaging": {
-          "address": "0x160ddec197F0C2036846FC9065EAb480af58A717",
+          "address": "0x93d3b94de307d19A3bF55AD4EF5093671f1848D4",
           "abi": [
             {
               "anonymous": false,
@@ -43529,7 +43319,7 @@
           ]
         },
         "TokenFacetStaging": {
-          "address": "0x61E81353B26b472Fac6A2Ce1B761478E12087F98",
+          "address": "0x4C400E6c7E9D7564647D09c4E5fc2a9408100Fd6",
           "abi": [
             {
               "inputs": [],
@@ -44446,7 +44236,7 @@
           ]
         },
         "UpgradeBeaconControllerStaging": {
-          "address": "0xcF088833AFf70Ca5040FB5B99D22b983203f45c2",
+          "address": "0xb01924cbf08341b9e7F71d0AD7a767A68ca91571",
           "abi": [
             {
               "inputs": [],
@@ -44902,7 +44692,7 @@
           ]
         },
         "WatcherManagerStaging": {
-          "address": "0x2DFfDA8f2Ae3bF9a4834be9f3680d6022408A41A",
+          "address": "0xce7012894B6b6e74C972D377D68EEca5B6048178",
           "abi": [
             {
               "inputs": [],
@@ -46399,7 +46189,7 @@
           ]
         },
         "BridgeFacetStaging": {
-          "address": "0x38e98a995f9ad8Cf27961aB26Cdda29472C912bC",
+          "address": "0xE4A38c6A231A7e299fee98Bf57B264E53d7160eD",
           "abi": [
             {
               "inputs": [],
@@ -52581,7 +52371,7 @@
           ]
         },
         "ConnextStaging": {
-          "address": "0x9D399235dC47e17ADF7c70e308AA9A6485cA6321",
+          "address": "0x457355cc325128A8f01D5BeD27f3aCaDD76EE90a",
           "abi": [
             {
               "inputs": [
@@ -55176,22 +54966,6 @@
             },
             {
               "inputs": [],
-              "name": "RelayerFacet__initiateClaim_emptyClaim",
-              "type": "error"
-            },
-            {
-              "inputs": [
-                {
-                  "internalType": "bytes32",
-                  "name": "transferId",
-                  "type": "bytes32"
-                }
-              ],
-              "name": "RelayerFacet__initiateClaim_notRelayer",
-              "type": "error"
-            },
-            {
-              "inputs": [],
               "name": "RelayerFacet__removeRelayer_notApproved",
               "type": "error"
             },
@@ -55199,62 +54973,6 @@
               "inputs": [],
               "name": "RelayerFacet__setRelayerFeeVault_invalidRelayerFeeVault",
               "type": "error"
-            },
-            {
-              "anonymous": false,
-              "inputs": [
-                {
-                  "indexed": true,
-                  "internalType": "address",
-                  "name": "recipient",
-                  "type": "address"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "uint256",
-                  "name": "total",
-                  "type": "uint256"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "bytes32[]",
-                  "name": "transferIds",
-                  "type": "bytes32[]"
-                }
-              ],
-              "name": "Claimed",
-              "type": "event"
-            },
-            {
-              "anonymous": false,
-              "inputs": [
-                {
-                  "indexed": true,
-                  "internalType": "uint32",
-                  "name": "domain",
-                  "type": "uint32"
-                },
-                {
-                  "indexed": true,
-                  "internalType": "address",
-                  "name": "recipient",
-                  "type": "address"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "address",
-                  "name": "caller",
-                  "type": "address"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "bytes32[]",
-                  "name": "transferIds",
-                  "type": "bytes32[]"
-                }
-              ],
-              "name": "InitiatedClaim",
-              "type": "event"
             },
             {
               "anonymous": false,
@@ -57642,7 +57360,7 @@
           ]
         },
         "ConnextStaging_DiamondProxy": {
-          "address": "0x9D399235dC47e17ADF7c70e308AA9A6485cA6321",
+          "address": "0x457355cc325128A8f01D5BeD27f3aCaDD76EE90a",
           "abi": [
             {
               "inputs": [
@@ -60237,22 +59955,6 @@
             },
             {
               "inputs": [],
-              "name": "RelayerFacet__initiateClaim_emptyClaim",
-              "type": "error"
-            },
-            {
-              "inputs": [
-                {
-                  "internalType": "bytes32",
-                  "name": "transferId",
-                  "type": "bytes32"
-                }
-              ],
-              "name": "RelayerFacet__initiateClaim_notRelayer",
-              "type": "error"
-            },
-            {
-              "inputs": [],
               "name": "RelayerFacet__removeRelayer_notApproved",
               "type": "error"
             },
@@ -60260,62 +59962,6 @@
               "inputs": [],
               "name": "RelayerFacet__setRelayerFeeVault_invalidRelayerFeeVault",
               "type": "error"
-            },
-            {
-              "anonymous": false,
-              "inputs": [
-                {
-                  "indexed": true,
-                  "internalType": "address",
-                  "name": "recipient",
-                  "type": "address"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "uint256",
-                  "name": "total",
-                  "type": "uint256"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "bytes32[]",
-                  "name": "transferIds",
-                  "type": "bytes32[]"
-                }
-              ],
-              "name": "Claimed",
-              "type": "event"
-            },
-            {
-              "anonymous": false,
-              "inputs": [
-                {
-                  "indexed": true,
-                  "internalType": "uint32",
-                  "name": "domain",
-                  "type": "uint32"
-                },
-                {
-                  "indexed": true,
-                  "internalType": "address",
-                  "name": "recipient",
-                  "type": "address"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "address",
-                  "name": "caller",
-                  "type": "address"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "bytes32[]",
-                  "name": "transferIds",
-                  "type": "bytes32[]"
-                }
-              ],
-              "name": "InitiatedClaim",
-              "type": "event"
             },
             {
               "anonymous": false,
@@ -68370,7 +68016,7 @@
           ]
         },
         "DiamondInit": {
-          "address": "0xb0C16E72d5934B8a92FFcA17678676430B6a2402",
+          "address": "0x7e2b4Ba646cc16b21996f4A41E952c0F56e2f3ac",
           "abi": [
             {
               "inputs": [],
@@ -68641,7 +68287,7 @@
           ]
         },
         "InboxFacetStaging": {
-          "address": "0x59d820a582598527B9b56F95B164A1EfeE4a7834",
+          "address": "0x61B16F1c887d2f11BdE8c1015D5b1140e0D4cEDe",
           "abi": [
             {
               "inputs": [],
@@ -69589,7 +69235,7 @@
           ]
         },
         "MerkleTreeManagerStaging": {
-          "address": "0x295F9318e8a65B7932cE8647F136Fa0730ed7490",
+          "address": "0x2C06CE550e46970E5c654eA0De14b55C04927b41",
           "abi": [
             {
               "inputs": [],
@@ -69998,7 +69644,7 @@
           ]
         },
         "MerkleTreeManagerUpgradeBeaconProxyStaging": {
-          "address": "0x6D0Be47AB3c96F16357Ad190b4FCF2cD86EF63d0",
+          "address": "0x12aF4EF8AdbE8EfbFc244dd5614Ff79d44371f43",
           "abi": [
             {
               "inputs": [
@@ -70027,7 +69673,7 @@
           ]
         },
         "MerkleTreeManagerUpgradeBeaconStaging": {
-          "address": "0x4e0505F96AD3d5931519C1652eA099C65F88E89d",
+          "address": "0xEd334149f1260025e7990569E87b598297F773A0",
           "abi": [
             {
               "inputs": [
@@ -70106,7 +69752,7 @@
           ]
         },
         "MulticallStaging": {
-          "address": "0xeBC2d159D4881c83Bed95fB2BA3E9378ae4e5366",
+          "address": "0xC25C0E4693579944bca4411B96d045ee32Ed3f44",
           "abi": [
             {
               "inputs": [
@@ -71445,7 +71091,7 @@
           ]
         },
         "OptimismSpokeConnectorSendOutboundRootResolverStaging": {
-          "address": "0x1568Db0B79A3056dC11AeA2E153D20AB84B4B6dC",
+          "address": "0x6D8A416f86B9780B050b4603a351644c517883Df",
           "abi": [
             {
               "inputs": [
@@ -71720,7 +71366,7 @@
           ]
         },
         "OptimismSpokeConnectorStaging": {
-          "address": "0xcb8b545236Bc1DCdAC95e049c1e8BEbf3Cfc7965",
+          "address": "0xcaFD2A39a9BDD2b8E710A6f28f082123BE52043c",
           "abi": [
             {
               "inputs": [
@@ -73304,7 +72950,7 @@
           ]
         },
         "ProposedOwnableFacetStaging": {
-          "address": "0x43ca0143564695fA3de521CDcc0011B54E9fEE25",
+          "address": "0xD6714b69C3edB18FA6e43A17D21bb227E6798745",
           "abi": [
             {
               "inputs": [],
@@ -74141,7 +73787,7 @@
           ]
         },
         "RelayerFacetStaging": {
-          "address": "0xDbD6578B0Aa69399647023007cb9D738c62de368",
+          "address": "0xaFfD28777f5e27796b7CB4f607F012579a9EE842",
           "abi": [
             {
               "inputs": [],
@@ -74200,22 +73846,6 @@
             },
             {
               "inputs": [],
-              "name": "RelayerFacet__initiateClaim_emptyClaim",
-              "type": "error"
-            },
-            {
-              "inputs": [
-                {
-                  "internalType": "bytes32",
-                  "name": "transferId",
-                  "type": "bytes32"
-                }
-              ],
-              "name": "RelayerFacet__initiateClaim_notRelayer",
-              "type": "error"
-            },
-            {
-              "inputs": [],
               "name": "RelayerFacet__removeRelayer_notApproved",
               "type": "error"
             },
@@ -74223,62 +73853,6 @@
               "inputs": [],
               "name": "RelayerFacet__setRelayerFeeVault_invalidRelayerFeeVault",
               "type": "error"
-            },
-            {
-              "anonymous": false,
-              "inputs": [
-                {
-                  "indexed": true,
-                  "internalType": "address",
-                  "name": "recipient",
-                  "type": "address"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "uint256",
-                  "name": "total",
-                  "type": "uint256"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "bytes32[]",
-                  "name": "transferIds",
-                  "type": "bytes32[]"
-                }
-              ],
-              "name": "Claimed",
-              "type": "event"
-            },
-            {
-              "anonymous": false,
-              "inputs": [
-                {
-                  "indexed": true,
-                  "internalType": "uint32",
-                  "name": "domain",
-                  "type": "uint32"
-                },
-                {
-                  "indexed": true,
-                  "internalType": "address",
-                  "name": "recipient",
-                  "type": "address"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "address",
-                  "name": "caller",
-                  "type": "address"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "bytes32[]",
-                  "name": "transferIds",
-                  "type": "bytes32[]"
-                }
-              ],
-              "name": "InitiatedClaim",
-              "type": "event"
             },
             {
               "anonymous": false,
@@ -75287,7 +74861,7 @@
           ]
         },
         "RoutersFacetStaging": {
-          "address": "0x2f3daA247F7E969E977dddBB4cFf9920Daea8e32",
+          "address": "0x157F14f906985CcbCF4c6fCd689147642c7a1766",
           "abi": [
             {
               "inputs": [],
@@ -78020,7 +77594,7 @@
           ]
         },
         "StableSwapFacetStaging": {
-          "address": "0xE829B5efBef4414287B78675EA274D5A1944ab59",
+          "address": "0xfcc0287c35B11f785c8caF22b5e2535480f9639C",
           "abi": [
             {
               "inputs": [],
@@ -78737,7 +78311,7 @@
           ]
         },
         "StableSwapStaging": {
-          "address": "0x88042F295484c6c7cd5E41D485e38d5Abd125baa",
+          "address": "0x5b04440BA40F2695Bd4123915FFb3002f81ce3C1",
           "abi": [
             {
               "anonymous": false,
@@ -80332,7 +79906,7 @@
           ]
         },
         "SwapAdminFacetStaging": {
-          "address": "0x6fcfEdF770E42CDe83c52B39920D1dF7ee56BF01",
+          "address": "0xb3b451B373Bb8c86d8482cA405309e1349148462",
           "abi": [
             {
               "inputs": [],
@@ -81158,7 +80732,7 @@
           ]
         },
         "SwapUtilsExternalStaging": {
-          "address": "0x5fd8a90Ec7cd3f08a1A00fd9eB006Bf13DD235f4",
+          "address": "0x4Fd49146d5E54d9720dcc940bd28BaF6E648A851",
           "abi": [
             {
               "anonymous": false,
@@ -83150,7 +82724,7 @@
           ]
         },
         "TokenFacetStaging": {
-          "address": "0x61E81353B26b472Fac6A2Ce1B761478E12087F98",
+          "address": "0x4C400E6c7E9D7564647D09c4E5fc2a9408100Fd6",
           "abi": [
             {
               "inputs": [],
@@ -84067,7 +83641,7 @@
           ]
         },
         "UpgradeBeaconControllerStaging": {
-          "address": "0xe1428E8DA6642BB55e957acc310E5fc7b774c935",
+          "address": "0xA12FC47E860Da119ed6AD78aCd5C8bce8527f69D",
           "abi": [
             {
               "inputs": [],
@@ -84523,7 +84097,7 @@
           ]
         },
         "WatcherManagerStaging": {
-          "address": "0xF721f4414E13B2d833B8752750967c235936909c",
+          "address": "0x3E9d31033fc0642cfFFD201A3AdcA8787da5C2ce",
           "abi": [
             {
               "inputs": [],
@@ -91081,7 +90655,7 @@
           ]
         },
         "ConnextStaging_DiamondProxy": {
-          "address": "0x54D9cE093622Ac2685D11D9FCF8f1ec02585e128",
+          "address": "0xDa7c13353A9213FB9aE870aD38d6DeC1Cca20FA9",
           "abi": [
             {
               "inputs": [
@@ -93676,22 +93250,6 @@
             },
             {
               "inputs": [],
-              "name": "RelayerFacet__initiateClaim_emptyClaim",
-              "type": "error"
-            },
-            {
-              "inputs": [
-                {
-                  "internalType": "bytes32",
-                  "name": "transferId",
-                  "type": "bytes32"
-                }
-              ],
-              "name": "RelayerFacet__initiateClaim_notRelayer",
-              "type": "error"
-            },
-            {
-              "inputs": [],
               "name": "RelayerFacet__removeRelayer_notApproved",
               "type": "error"
             },
@@ -93699,62 +93257,6 @@
               "inputs": [],
               "name": "RelayerFacet__setRelayerFeeVault_invalidRelayerFeeVault",
               "type": "error"
-            },
-            {
-              "anonymous": false,
-              "inputs": [
-                {
-                  "indexed": true,
-                  "internalType": "address",
-                  "name": "recipient",
-                  "type": "address"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "uint256",
-                  "name": "total",
-                  "type": "uint256"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "bytes32[]",
-                  "name": "transferIds",
-                  "type": "bytes32[]"
-                }
-              ],
-              "name": "Claimed",
-              "type": "event"
-            },
-            {
-              "anonymous": false,
-              "inputs": [
-                {
-                  "indexed": true,
-                  "internalType": "uint32",
-                  "name": "domain",
-                  "type": "uint32"
-                },
-                {
-                  "indexed": true,
-                  "internalType": "address",
-                  "name": "recipient",
-                  "type": "address"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "address",
-                  "name": "caller",
-                  "type": "address"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "bytes32[]",
-                  "name": "transferIds",
-                  "type": "bytes32[]"
-                }
-              ],
-              "name": "InitiatedClaim",
-              "type": "event"
             },
             {
               "anonymous": false,
@@ -101506,7 +101008,7 @@
           ]
         },
         "DiamondInit": {
-          "address": "0xb0C16E72d5934B8a92FFcA17678676430B6a2402",
+          "address": "0x7e2b4Ba646cc16b21996f4A41E952c0F56e2f3ac",
           "abi": [
             {
               "inputs": [],
@@ -110486,7 +109988,7 @@
           ]
         },
         "WatcherManagerStaging": {
-          "address": "0xA25fd31d54359C4a96FCd5018D8522671f020702",
+          "address": "0x0F4E2866D874B94fc7424d7469deB13C8aE7738F",
           "abi": [
             {
               "inputs": [],
@@ -110731,7 +110233,7 @@
           ]
         },
         "UpgradeBeaconControllerStaging": {
-          "address": "0xFA714d32b56208191f184a8665DD141Ce74f87fC",
+          "address": "0x2075c9E31f973bb53CAE5BAC36a8eeB4B082ADC2",
           "abi": [
             {
               "inputs": [],
@@ -110942,7 +110444,7 @@
           ]
         },
         "MerkleTreeManagerStaging": {
-          "address": "0x4029aB90d84C10Ae6A70fbf8F4CFa63a7EE1F0c8",
+          "address": "0x18F49442bFB1E5280a36a3c6e54A58AB64C9ac55",
           "abi": [
             {
               "inputs": [],
@@ -111284,7 +110786,7 @@
           ]
         },
         "MerkleTreeManagerUpgradeBeaconStaging": {
-          "address": "0x97Aa9000B9b2F3029cc48Be71B3E38c6191950Ed",
+          "address": "0x96b536B4C293FacAC37B9E76aD4EE96F0bA0ee31",
           "abi": [
             {
               "inputs": [
@@ -111322,7 +110824,7 @@
           ]
         },
         "MerkleTreeManagerUpgradeBeaconProxyStaging": {
-          "address": "0x0F6D9fF149E69A0C4b14B7b707865A739cA79687",
+          "address": "0xF0d077704412f6E3C27CA67907839EFF70894933",
           "abi": [
             {
               "inputs": [
@@ -111351,7 +110853,7 @@
           ]
         },
         "PolygonSpokeConnectorStaging": {
-          "address": "0xb92A4Cc4E8D8206A61A6140a42d588e5f8d1a3c5",
+          "address": "0xBa2bc477aa0fc88526034E59C5df343965feb633",
           "abi": [
             {
               "inputs": [
@@ -112449,7 +111951,7 @@
           ]
         },
         "PolygonSpokeConnectorSendOutboundRootResolverStaging": {
-          "address": "0xfB8dF78486c67daE34990077017C09B367ec0020",
+          "address": "0x5032810A48d45D83b23996057b0b3A29A6adE906",
           "abi": [
             {
               "inputs": [
@@ -112724,7 +112226,7 @@
           ]
         },
         "TokenFacetStaging": {
-          "address": "0x61E81353B26b472Fac6A2Ce1B761478E12087F98",
+          "address": "0x4C400E6c7E9D7564647D09c4E5fc2a9408100Fd6",
           "abi": [
             {
               "inputs": [],
@@ -113547,7 +113049,7 @@
           ]
         },
         "BridgeFacetStaging": {
-          "address": "0x38e98a995f9ad8Cf27961aB26Cdda29472C912bC",
+          "address": "0xE4A38c6A231A7e299fee98Bf57B264E53d7160eD",
           "abi": [
             {
               "inputs": [],
@@ -114668,7 +114170,7 @@
           ]
         },
         "InboxFacetStaging": {
-          "address": "0x59d820a582598527B9b56F95B164A1EfeE4a7834",
+          "address": "0x61B16F1c887d2f11BdE8c1015D5b1140e0D4cEDe",
           "abi": [
             {
               "inputs": [],
@@ -114861,7 +114363,7 @@
           ]
         },
         "ProposedOwnableFacetStaging": {
-          "address": "0x43ca0143564695fA3de521CDcc0011B54E9fEE25",
+          "address": "0xD6714b69C3edB18FA6e43A17D21bb227E6798745",
           "abi": [
             {
               "inputs": [],
@@ -115422,7 +114924,7 @@
           ]
         },
         "RelayerFacetStaging": {
-          "address": "0xDbD6578B0Aa69399647023007cb9D738c62de368",
+          "address": "0xaFfD28777f5e27796b7CB4f607F012579a9EE842",
           "abi": [
             {
               "inputs": [],
@@ -115481,22 +114983,6 @@
             },
             {
               "inputs": [],
-              "name": "RelayerFacet__initiateClaim_emptyClaim",
-              "type": "error"
-            },
-            {
-              "inputs": [
-                {
-                  "internalType": "bytes32",
-                  "name": "transferId",
-                  "type": "bytes32"
-                }
-              ],
-              "name": "RelayerFacet__initiateClaim_notRelayer",
-              "type": "error"
-            },
-            {
-              "inputs": [],
               "name": "RelayerFacet__removeRelayer_notApproved",
               "type": "error"
             },
@@ -115504,62 +114990,6 @@
               "inputs": [],
               "name": "RelayerFacet__setRelayerFeeVault_invalidRelayerFeeVault",
               "type": "error"
-            },
-            {
-              "anonymous": false,
-              "inputs": [
-                {
-                  "indexed": true,
-                  "internalType": "address",
-                  "name": "recipient",
-                  "type": "address"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "uint256",
-                  "name": "total",
-                  "type": "uint256"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "bytes32[]",
-                  "name": "transferIds",
-                  "type": "bytes32[]"
-                }
-              ],
-              "name": "Claimed",
-              "type": "event"
-            },
-            {
-              "anonymous": false,
-              "inputs": [
-                {
-                  "indexed": true,
-                  "internalType": "uint32",
-                  "name": "domain",
-                  "type": "uint32"
-                },
-                {
-                  "indexed": true,
-                  "internalType": "address",
-                  "name": "recipient",
-                  "type": "address"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "address",
-                  "name": "caller",
-                  "type": "address"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "bytes32[]",
-                  "name": "transferIds",
-                  "type": "bytes32[]"
-                }
-              ],
-              "name": "InitiatedClaim",
-              "type": "event"
             },
             {
               "anonymous": false,
@@ -115698,7 +115128,7 @@
           ]
         },
         "RoutersFacetStaging": {
-          "address": "0x2f3daA247F7E969E977dddBB4cFf9920Daea8e32",
+          "address": "0x157F14f906985CcbCF4c6fCd689147642c7a1766",
           "abi": [
             {
               "inputs": [],
@@ -116568,7 +115998,7 @@
           ]
         },
         "StableSwapFacetStaging": {
-          "address": "0xE829B5efBef4414287B78675EA274D5A1944ab59",
+          "address": "0xfcc0287c35B11f785c8caF22b5e2535480f9639C",
           "abi": [
             {
               "inputs": [],
@@ -117285,7 +116715,7 @@
           ]
         },
         "SwapAdminFacetStaging": {
-          "address": "0x6fcfEdF770E42CDe83c52B39920D1dF7ee56BF01",
+          "address": "0xb3b451B373Bb8c86d8482cA405309e1349148462",
           "abi": [
             {
               "inputs": [],
@@ -118037,7 +117467,7 @@
           ]
         },
         "ConnextStaging": {
-          "address": "0x54D9cE093622Ac2685D11D9FCF8f1ec02585e128",
+          "address": "0xDa7c13353A9213FB9aE870aD38d6DeC1Cca20FA9",
           "abi": [
             {
               "inputs": [
@@ -120632,22 +120062,6 @@
             },
             {
               "inputs": [],
-              "name": "RelayerFacet__initiateClaim_emptyClaim",
-              "type": "error"
-            },
-            {
-              "inputs": [
-                {
-                  "internalType": "bytes32",
-                  "name": "transferId",
-                  "type": "bytes32"
-                }
-              ],
-              "name": "RelayerFacet__initiateClaim_notRelayer",
-              "type": "error"
-            },
-            {
-              "inputs": [],
               "name": "RelayerFacet__removeRelayer_notApproved",
               "type": "error"
             },
@@ -120655,62 +120069,6 @@
               "inputs": [],
               "name": "RelayerFacet__setRelayerFeeVault_invalidRelayerFeeVault",
               "type": "error"
-            },
-            {
-              "anonymous": false,
-              "inputs": [
-                {
-                  "indexed": true,
-                  "internalType": "address",
-                  "name": "recipient",
-                  "type": "address"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "uint256",
-                  "name": "total",
-                  "type": "uint256"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "bytes32[]",
-                  "name": "transferIds",
-                  "type": "bytes32[]"
-                }
-              ],
-              "name": "Claimed",
-              "type": "event"
-            },
-            {
-              "anonymous": false,
-              "inputs": [
-                {
-                  "indexed": true,
-                  "internalType": "uint32",
-                  "name": "domain",
-                  "type": "uint32"
-                },
-                {
-                  "indexed": true,
-                  "internalType": "address",
-                  "name": "recipient",
-                  "type": "address"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "address",
-                  "name": "caller",
-                  "type": "address"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "bytes32[]",
-                  "name": "transferIds",
-                  "type": "bytes32[]"
-                }
-              ],
-              "name": "InitiatedClaim",
-              "type": "event"
             },
             {
               "anonymous": false,
@@ -123098,7 +122456,7 @@
           ]
         },
         "MulticallStaging": {
-          "address": "0x42eb812B508aAF15615624BEE3547C9178C92EcD",
+          "address": "0x317a99A5729378360F5e67C1C86df563426BF306",
           "abi": [
             {
               "inputs": [
@@ -123139,7 +122497,7 @@
           ]
         },
         "SwapUtilsExternalStaging": {
-          "address": "0x6920e9C763a48f38f9f6769c60b2EC210Eb93a17",
+          "address": "0xc8D6779597F1F4AbB3fb23712eD7a228B62A3377",
           "abi": [
             {
               "anonymous": false,
@@ -123516,7 +122874,7 @@
           ]
         },
         "StableSwapStaging": {
-          "address": "0x339F0C482C25CE261e6a9F02D42B6152DdE9d316",
+          "address": "0x451D21f4baA7D798500D32929e3bb30b6850CB8d",
           "abi": [
             {
               "anonymous": false,

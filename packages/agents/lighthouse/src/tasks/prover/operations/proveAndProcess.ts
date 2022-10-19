@@ -13,7 +13,7 @@ import {
 import { getContext } from "../prover";
 import { SpokeDBHelper, HubDBHelper } from "../adapters/database/helper";
 
-export const HUB_DOMAIN: string = "1735353714";
+export const HUB_DOMAIN = "1735353714";
 
 export const proveAndProcess = async () => {
   const { requestContext, methodContext } = createLoggingContext(proveAndProcess.name);
@@ -53,13 +53,13 @@ export const processMessage = async (message: XMessage) => {
   }
   // Count of leaf nodes in origin domain`s outbound tree
   const messageRootCount = await database.getMessageRootCount(message.originDomain, targetMessageRoot);
-  if (!messageRootCount) {
+  if (messageRootCount === undefined) {
     throw new NoMessageRootCount(message.originDomain, targetMessageRoot);
   }
   // Index of messageRoot leaf node in aggregate tree.
   // const messageRootIndex = await database.getMessageRootIndex(message.originDomain, targetMessageRoot);
   const messageRootIndex = await database.getMessageRootIndex(config.hubDomain, targetMessageRoot);
-  if (!messageRootIndex) {
+  if (messageRootIndex === undefined) {
     throw new NoMessageRootIndex(message.originDomain, targetMessageRoot);
   }
 
@@ -76,7 +76,7 @@ export const processMessage = async (message: XMessage) => {
     throw new NoAggregateRootCount(targetAggregateRoot);
   }
   // TODO: Move to per domain storage adapters in context
-  const spokeStore = new SpokeDBHelper(message.originDomain, messageRootCount, database);
+  const spokeStore = new SpokeDBHelper(message.originDomain, messageRootCount + 1, database);
   const hubStore = new HubDBHelper("hub", aggregateRootCount, database);
 
   const spokeSMT = new SparseMerkleTree(spokeStore);
@@ -92,41 +92,31 @@ export const processMessage = async (message: XMessage) => {
   }
 
   // Proof path for proving inclusion of messageRoot in aggregateRoot.
-  const messageRootProof = await hubSMT.getProof(messageRootIndex - 1);
+  const messageRootProof = await hubSMT.getProof(messageRootIndex);
   if (!messageRootProof) {
     throw new NoMessageRootProof(messageRootIndex, message.origin.root);
   }
 
   // Verify proof of inclusion of message in messageRoot.
-  const messageVerification = spokeSMT.verify(
-    message.origin.index,
-    message.leaf,
-    messageProof.path,
-    message.origin.root,
-  );
+  const messageVerification = spokeSMT.verify(message.origin.index, message.leaf, messageProof.path, targetMessageRoot);
   if (messageVerification && messageVerification.verified) {
     logger.info("Message Verified successfully", requestContext, methodContext, {
       messageVerification,
     });
   } else {
-    logger.info("Message verification failed", requestContext, methodContext, {
+    logger.warn("Message verification failed", requestContext, methodContext, {
       messageVerification,
     });
   }
 
   // Verify proof of inclusion of messageRoot in aggregateRoot.
-  const rootVerification = hubSMT.verify(
-    messageRootIndex - 1,
-    targetMessageRoot,
-    messageRootProof,
-    targetAggregateRoot,
-  );
+  const rootVerification = hubSMT.verify(messageRootIndex, targetMessageRoot, messageRootProof, targetAggregateRoot);
   if (rootVerification && rootVerification.verified) {
     logger.info("MessageRoot Verified successfully", requestContext, methodContext, {
       rootVerification,
     });
   } else {
-    logger.info("MessageRoot verification failed", requestContext, methodContext, {
+    logger.warn("MessageRoot verification failed", requestContext, methodContext, {
       rootVerification,
     });
   }
@@ -135,7 +125,7 @@ export const processMessage = async (message: XMessage) => {
     [messageProof],
     targetAggregateRoot,
     messageRootProof,
-    messageRootIndex - 1,
+    messageRootIndex,
   ]);
 
   const destinationSpokeConnector = config.chains[message.destinationDomain]?.deployments.spokeConnector;

@@ -14,8 +14,6 @@ import {WatcherClient} from "../WatcherClient.sol";
 import {Connector} from "./Connector.sol";
 import {ConnectorManager} from "./ConnectorManager.sol";
 
-import "forge-std/console.sol";
-
 /**
  * @title SpokeConnector
  * @author Connext Labs, Inc.
@@ -343,8 +341,6 @@ abstract contract SpokeConnector is Connector, ConnectorManager, WatcherClient, 
     // below to minimize storage access calls.
     bytes32 _messageHash = keccak256(_proofs[0].message);
     // bytes32 _messageHash = bytes32(0xc1cd1b9ba9310c64a39b4e9b9cf5228b5357633c9c28ab7fdbec4d4b7c74d959);
-    console.log("leaf");
-    console.logBytes32(_messageHash);
     // TODO: Could use an array of sharedRoots so you can submit a message batch of messages with
     // different origins.
     bytes32 _messageRoot = calculateMessageRoot(_messageHash, _proofs[0].path, _proofs[0].index);
@@ -476,16 +472,8 @@ abstract contract SpokeConnector is Connector, ConnectorManager, WatcherClient, 
     // // 1. Ensure aggregate root has been proven.
     // verifyAggregateRoot(_aggregateRoot);
 
-    console.log("expected");
-    console.logBytes32(_aggregateRoot);
-
-    console.log("message root");
-    console.logBytes32(_messageRoot);
-
     // 2. Calculate an aggregate root, given this inbound root (as leaf), path (proof), and index.
     bytes32 _calculatedAggregateRoot = MerkleLib.branchRoot(_messageRoot, _aggregatePath, _aggregateIndex);
-    console.log("calculated");
-    console.logBytes32(_calculatedAggregateRoot);
 
     // 3. Check to make sure it matches the current aggregate root we have stored.
     require(_calculatedAggregateRoot == _aggregateRoot, "invalid inboundRoot");

@@ -41,6 +41,7 @@ import "./tasks/stableswap/removeSwapLiquidity";
 import "./tasks/stableswap/setSwapFees";
 import "./tasks/connector/send";
 import "./tasks/connector/setDelayBlocks";
+import "./tasks/connector/queryArbitrum";
 import "./tasks/rootmanager/propagate";
 import "./tasks/rootmanager/setDelayBlocks";
 import "./tasks/setMirrorConnectors";

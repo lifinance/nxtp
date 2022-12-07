@@ -68,7 +68,7 @@ jobs:
         run: yarn workspaces focus @connext/nxtp-contracts && yarn workspace @connext/nxtp-contracts build
 
       - name: Build and Run Testnet
-        run: /root/go/bin/harbor apply connext-main --placeholder-map sha_default=${{ needs.init.outputs.short-sha }},tag_default=${{ needs.init.outputs.short-sha }} --no-wait true 
+        run: /root/go/bin/harbor apply ${{ needs.init.outputs.short-sha }} --placeholder-map sha_default=${{ needs.init.outputs.short-sha }},tag_default=${{ needs.init.outputs.short-sha }} --no-wait true 
 
       - name: yarn && yarn build:all
         run: |
@@ -76,12 +76,12 @@ jobs:
           yarn && yarn build:all
 
       - name: Poll until testnet running
-        run: sh /root/describe.sh connext-main
+        run: sh /root/describe.sh ${{ needs.init.outputs.short-sha }}
 
       - name: Describe testnet
         id: testnet-data
         run: |
-          TDATA=$( /root/go/bin/harbor describe testnet --name connext-main --output json | sed '1d' )
+          TDATA=$( /root/go/bin/harbor describe testnet --name ${{ needs.init.outputs.short-sha }} --output json | sed '1d' )
           TDATA="${TDATA//'%'/''}"
           TDATA="${TDATA//$'\n'/''}"
           TDATA="${TDATA//$'\r'/''}"
@@ -106,7 +106,7 @@ jobs:
 
       - name: Kill Testnet 
         if: always()
-        run: /root/go/bin/harbor kill testnet --name connext-main --no-wait true
+        run: /root/go/bin/harbor kill testnet --name c${{ needs.init.outputs.short-sha }} --no-wait true
 
   stop-runner:
     name: Stop self-hosted EC2 runner

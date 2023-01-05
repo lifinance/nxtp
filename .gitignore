@@ -5,7 +5,6 @@
 
 _tmp
 build
-dist*
 coverage
 node_modules*
 *.tsBuildInfo

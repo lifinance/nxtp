@@ -1885,7 +1885,7 @@ __metadata:
     "@graphql-codegen/typescript": ^2.0.0
     "@graphql-codegen/typescript-graphql-request": ^4.0.0
     "@graphql-codegen/typescript-operations": ^2.0.1
-    "@sinclair/typebox": ^0.18.1
+    "@sinclair/typebox": 0.20.6
     "@types/chai": ^4.2.21
     "@types/chai-as-promised": ^7.1.4
     "@types/chai-subset": ^1.3.3
@@ -4114,10 +4114,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sinclair/typebox@npm:^0.18.1":
-  version: 0.18.1
-  resolution: "@sinclair/typebox@npm:0.18.1"
-  checksum: b4b9cc1f49cc16c92b484db7bb02c0609c100b0c510fd5451fed455a956b3a3015af26f602651eccfc9ab86808f126e0d0869a57e2e75d65adae942035430ee4
+"@sinclair/typebox@npm:0.20.6":
+  version: 0.20.6
+  resolution: "@sinclair/typebox@npm:0.20.6"
+  checksum: cbc5a62b6f3364e37035767849269646ee4dcb19a2b6d7f1c5b74c1e44a9acaf21c5d3263325f4acaeda5f877c0fe9e5e2b6af396f1edc50226d3bec740c6dbb
   languageName: node
   linkType: hard
 
